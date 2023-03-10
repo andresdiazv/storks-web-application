@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <% if (error) { %>
+    <p><%= error %></p>
+    <% } %>
+    <form method="post">
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" name="email" required />
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" name="password" required />
+      </div>
+      <div>
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <a href="/register">Create new account</a>
+
+    <script src="../firebase-sdk.js"></script>
+    <script src="../app.js"></script>
+  </body>
+</html>

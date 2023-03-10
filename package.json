@@ -1,0 +1,17 @@
+{
+  "name": "storks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "firebase": "^7.16.1",
+    "firebase-admin": "^11.5.0",
+    "nodemon": "^2.0.21"
+  }
+}

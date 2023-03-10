@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <% if (user) { %>
+    <h1>Welcome, <%= user.email %>!</h1>
+    <form method="get" action="/logout">
+      <button type="submit">Logout</button>
+    </form>
+  <% } else { %>
+    <p>You must be logged in to access the dashboard.</p>
+    <form method="get" action="/login">
+      <button type="submit">Login</button>
+    </form>
+  <% } %>
+</body>
+</html>
