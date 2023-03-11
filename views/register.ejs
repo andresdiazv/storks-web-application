@@ -8,7 +8,11 @@
     <% if (error) { %>
     <p><%= error %></p>
     <% } %>
-    <form method="post">
+    <form method="post" action="/register">
+      <div>
+        <label for="name">Name:</label>
+        <input type="text" name="name" required />
+      </div>
       <div>
         <label for="email">Email:</label>
         <input type="email" name="email" required />
@@ -21,5 +25,8 @@
         <button type="submit">Register</button>
       </div>
     </form>
+    <div>
+      <a href="/login">Already have an account? Login</a>
+    </div>
   </body>
 </html>

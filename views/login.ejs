@@ -5,10 +5,7 @@
   </head>
   <body>
     <h1>Login</h1>
-    <% if (error) { %>
-    <p><%= error %></p>
-    <% } %>
-    <form method="post">
+    <form method="post" action="/login">
       <div>
         <label for="email">Email:</label>
         <input type="email" name="email" required />
@@ -21,9 +18,6 @@
         <button type="submit">Login</button>
       </div>
     </form>
-    <a href="/register">Create new account</a>
-
-    <script src="../firebase-sdk.js"></script>
-    <script src="../app.js"></script>
+    <p>Don't have an account? <a href="/register">Register</a></p>
   </body>
 </html>
