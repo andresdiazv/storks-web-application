@@ -9,7 +9,7 @@
   </head>
   <body>
     <div class="container">
-      <img src="/images/image.png" alt="Avatar" class="resize-image" />
+      <img src="\images\image.png" alt="Avatar" class="resize-image" />
       <form action="/login" method="POST">
         <div class="btn-container">
           <div class="text-space">
@@ -30,6 +30,9 @@
               required
             />
           </div>
+          <% if (message) { %>
+          <p class="error"><%= message %></p>
+          <% } %>
           <div class="text-space">
             <button class="login-btn" type="submit" value="Login">Login</button>
           </div>
