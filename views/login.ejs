@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
+    <link rel="stylesheet" href="stylesheets/login.css" />
   </head>
   <body>
-    <h1>Login</h1>
-    <form method="post" action="/login">
-      <div>
-        <label for="email">Email:</label>
-        <input type="email" name="email" required />
+    <form class="login-form">
+      <h1>Login</h1>
+      <div class="input-container">
+        <input type="email" id="email" placeholder="Email" />
+        <i class="fas fa-envelope"></i>
       </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required />
+      <div class="input-container">
+        <input type="password" id="password" placeholder="Password" />
+        <i class="fas fa-lock"></i>
       </div>
-      <div>
-        <button type="submit">Login</button>
-      </div>
+      <button type="submit">Login</button>
+      <div class="error-message"></div>
     </form>
+
     <p>Don't have an account? <a href="/register">Register</a></p>
+
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js"></script>
+    <script src="login.js"></script>
   </body>
 </html>

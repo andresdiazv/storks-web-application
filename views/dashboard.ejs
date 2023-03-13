@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Dashboard</title>
-</head>
-<body>
-  <% if (user) { %>
-    <h1>Welcome, <%= user.email %>!</h1>
-    <form method="get" action="/logout">
-      <button type="submit">Logout</button>
-    </form>
-  <% } else { %>
-    <p>You must be logged in to access the dashboard.</p>
-    <form method="get" action="/login">
-      <button type="submit">Login</button>
-    </form>
-  <% } %>
-</body>
+  <head>
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <h1>Welcome to the Dashboard, <%= user.email %></h1>
+    <p>Your UID is <%= user.uid %></p>
+    <button id="load-data">Load More Data</button>
+    <ul id="data-list"></ul>
+    <a href="/logout">Log out</a>
+    <script>
+      const loadButton = document.querySelector('#load-data');
+      const dataList = document.querySelector('#data-list');
+      const token = '<%= token %>';
+
+      loadButton.addEventListener('click', async () => {
+        const response = await fetch(`/data?token=${token}`);
+        const data = await response.json();
+        dataList.innerHTML = data.map(d => `<li>${d}</li>`).join('');
+      });
+    </script>
+  </body>
 </html>

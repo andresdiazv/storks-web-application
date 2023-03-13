@@ -15,23 +15,17 @@ const db = admin.database();
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware function to verify ID token and retrieve idToken from the Realtime Database
-function verifyIdToken(req, res, next) {
-  const email = req.body.email;
-  const password = req.body.password;
+// Middleware function to verify ID token and retrieve idToken from the request
+async function verifyIdToken(req, res, next) {
+  const idToken = req.query.idToken;
 
-  admin
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      userCredential.user.getIdToken().then((idToken) => {
-        req.idToken = idToken;
-        next();
-      });
-    })
-    .catch((error) => {
-      res.render("login", { error: error.message });
-    });
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    req.uid = decodedToken.uid;
+    next();
+  } catch (error) {
+    res.redirect("/login");
+  }
 }
 
 app.get("/", (req, res) => {
@@ -63,58 +57,82 @@ app.post("/register", (req, res) => {
         // Add more properties here as needed
       });
 
-      admin.auth().signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        userCredential.user.getIdToken().then((idToken) => {
-          res.redirect(`/dashboard?idToken=${idToken}`);
+      admin
+        .auth()
+        .createCustomToken(userRecord.uid)
+        .then((customToken) => {
+          res.redirect(`/dashboard?token=${customToken}`);
+        })
+        .catch((error) => {
+          res.render("login", { error: error.message });
         });
-      })
-      .catch((error) => {
-        res.render("login", { error: error.message });
-      });
     })
     .catch((error) => {
       res.render("register", { error: error.message });
     });
 });
 
-app.get('/login', (req, res) => {
-  res.render('login', { error: null }); // pass in null as the default value for error
+app.get("/login", (req, res) => {
+  res.render("login", { error: null }); // pass in null as the default value for error
 });
 
-app.post("/login", verifyIdToken, (req, res) => {
-  const idToken = req.idToken;
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
 
-  res.redirect(`/dashboard?idToken=${idToken}`);
+  // Remove the signInWithEmailAndPassword call and replace it with createCustomToken
+  admin
+    .auth()
+    .getUserByEmail(email)
+    .then((userRecord) => {
+      admin
+        .auth()
+        .createCustomToken(userRecord.uid)
+        .then((customToken) => {
+          res.redirect(`/dashboard?idToken=${customToken}`);
+        })
+        .catch((error) => {
+          res.render("login", { error: error.message });
+        });
+    })
+    .catch((error) => {
+      res.render("login", { error: error.message });
+    });
 });
 
-app.get("/dashboard", (req, res) => {
+
+app.get("/dashboard", verifyIdToken, (req, res) => {
   const idToken = req.query.idToken;
 
+  // Verify the user's ID token to authenticate the user
   admin
     .auth()
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const userRef = db.ref("users/" + decodedToken.uid);
-
       userRef.once("value", (snapshot) => {
         const user = snapshot.val();
-
-        if (user) {
-          res.render("dashboard", { user: user });
-        } else {
-          res.redirect("/login");
-        }
+        res.render("dashboard", { user, idToken });
       });
     })
     .catch((error) => {
       res.redirect("/login");
     });
 });
+
+
+app.get('/data', verifyIdToken, (req, res) => {
+  const dataRef = db.ref('data');
+  dataRef.once('value', snapshot => {
+    const data = snapshot.val();
+    res.json(data);
+  });
+});
+
 app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
 app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+  console.log(`Server listening on port ${port}`);
 });
