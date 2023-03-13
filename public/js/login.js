@@ -1,23 +1,24 @@
-// Get the form element
-const form = document.querySelector("form");
+const loginForm = document.querySelector('#login-form');
 
-// Add an event listener to the form submit event
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-  const email = emailInput.value;
-  const password = passwordInput.value;
+  const email = loginForm.email.value;
+  const password = loginForm.password.value;
 
-  // Call Firebase auth to sign in with email and password
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
+  // Call Firebase authentication API to sign in the user with email and password
+  firebase.auth().signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      const idToken = userCredential.user.getIdToken();
+      // Retrieve the user's ID token
+      return userCredential.user.getIdToken();
+    })
+    .then((idToken) => {
+      // Redirect the user to the dashboard with the ID token as a query parameter
       window.location.href = `/dashboard?idToken=${idToken}`;
     })
     .catch((error) => {
-      const errorMessage = error.message;
-      document.querySelector(".error-message").textContent = errorMessage;
+      console.error(error);
+      const errorMessage = document.querySelector('#error-message');
+      errorMessage.textContent = error.message;
     });
 });

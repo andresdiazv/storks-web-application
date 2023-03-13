@@ -14,6 +14,8 @@ const db = admin.database();
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+
 
 // Middleware function to verify ID token and retrieve idToken from the request
 async function verifyIdToken(req, res, next) {
@@ -116,9 +118,11 @@ app.get("/dashboard", verifyIdToken, (req, res) => {
       });
     })
     .catch((error) => {
+      console.error("Error verifying ID token:", error);
       res.redirect("/login");
     });
 });
+
 
 
 app.get('/data', verifyIdToken, (req, res) => {

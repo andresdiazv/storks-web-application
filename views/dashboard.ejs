@@ -1,24 +1,20 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Dashboard</title>
-  </head>
-  <body>
-    <h1>Welcome to the Dashboard, <%= user.email %></h1>
-    <p>Your UID is <%= user.uid %></p>
-    <button id="load-data">Load More Data</button>
-    <ul id="data-list"></ul>
-    <a href="/logout">Log out</a>
-    <script>
-      const loadButton = document.querySelector('#load-data');
-      const dataList = document.querySelector('#data-list');
-      const token = '<%= token %>';
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/stylesheets/dashboard.css">
+</head>
+<body>
+  <h1>Welcome to your Dashboard</h1>
+  <p>User: <%= user.email %></p>
+  <p>UID: <%= user.uid %></p>
+  <p>Token: <%= idToken %></p>
 
-      loadButton.addEventListener('click', async () => {
-        const response = await fetch(`/data?token=${token}`);
-        const data = await response.json();
-        dataList.innerHTML = data.map(d => `<li>${d}</li>`).join('');
-      });
-    </script>
-  </body>
+  <button id="getData">Get Data</button>
+  <div id="data"></div>
+
+  <script src="/javascripts/dashboard.js"></script>
+</body>
 </html>
