@@ -2,45 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/stylesheets/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Login</title>
+    <link rel="stylesheet" href="/stylesheets/login.css" />
   </head>
   <body>
     <div class="container">
-      <h1>Login</h1>
-      <img src="\images\image.png" alt="Avatar" class="resize-image" />
-
-      <% if (message) { %>
-        <div><%= message %></div>
-      <% } %>
-
-      <form action="/login" method="POST">
-        <div class="text-space">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Email"
-            required
-          />
+      <div class="login-box">
+        <img src="\images\image.png" alt="Avatar" class="resize-image" />
+        <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger">
+          <% for (let i = 0; i < error.length; i++) { %>
+          <p><%= error[i] %></p>
+          <% } %>
         </div>
-        <div class="text-space">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
+        <% } %>
+        <form action="/login" method="POST">
+          <div class="login-box-input">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="login-box-input">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <button class="login-btn" type="submit" value="Login">Login</button>
+          <p class="login-box-text">
+            <a href="#">Forgot your password?</a>
+          </p>
+        </form>
+        <div class="login-box-footer">
+          <p>Need an account? <a href="/register">Register</a></p>
         </div>
-        <div>
-          <input type="submit" value="Login" />
-        </div>
-
-        <a href="/register">Don't have an account? Register</a>
-      </form>
+      </div>
     </div>
   </body>
 </html>

@@ -2,53 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/stylesheets/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/stylesheets/register.css" />
     <title>Register</title>
   </head>
   <body>
     <div class="container">
-      <h1>Register</h1>
-      
-      <% if (error) { %>
+      <div class="login-box">
+        <img src="\images\image.png" alt="Avatar" class="resize-image" />
+        <% if (error) { %>
         <div><%= error %></div>
-      <% } %>
+        <% } %>
 
-      <form action="/register" method="POST">
-        <div class="text-space">
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="Name"
-            required
-          />
+        <form action="/register" method="POST">
+          <div class="login-box-input">
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Name"
+              required
+            />
+          </div>
+          <div class="login-box-input">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="login-box-input">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div>
+            <input type="submit" value="Register" />
+          </div>
+          <div class="login-box-footer">
+          <p>Already have an account? <a href="/login">Login</a></p>
         </div>
-        <div class="text-space">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Email"
-            required
-          />
-        </div>
-        <div class="text-space">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
-        </div>
-        <div>
-          <input type="submit" value="Register" />
-        </div>
-
-        <a href="/login">Already have an account? Login</a>
-      </form>
+        </form>
+      </div>
     </div>
   </body>
 </html>
