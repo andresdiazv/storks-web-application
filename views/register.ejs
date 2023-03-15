@@ -10,12 +10,11 @@
   <body>
     <div class="container">
       <h1>Register</h1>
-      <ul>
-        <% if (typeof errors != 'undefined') { %> <% errors.forEach(error => {
-        %>
-        <li><%= error.message %></li>
-        <% }) %> <% } %>
-      </ul>
+      
+      <% if (error) { %>
+        <div><%= error %></div>
+      <% } %>
+
       <form action="/register" method="POST">
         <div class="text-space">
           <input

@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Login</title>
   </head>
   <body>
     <div class="container">
+      <h1>Login</h1>
       <img src="\images\image.png" alt="Avatar" class="resize-image" />
+
+      <% if (message) { %>
+        <div><%= message %></div>
+      <% } %>
+
       <form action="/login" method="POST">
-        <div class="btn-container">
-          <div class="text-space">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Email"
-              required
-            />
-          </div>
-          <div class="text-space">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Password"
-              required
-            />
-          </div>
-          <% if (message) { %>
-          <p class="error"><%= message %></p>
-          <% } %>
-          <div class="text-space">
-            <button class="login-btn" type="submit" value="Login">Login</button>
-          </div>
-          <a href="/register">Register</a>
+        <div class="text-space">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
         </div>
+        <div class="text-space">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <div>
+          <input type="submit" value="Login" />
+        </div>
+
+        <a href="/register">Don't have an account? Register</a>
       </form>
     </div>
   </body>
