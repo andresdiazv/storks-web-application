@@ -1,3 +1,8 @@
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px #2f3136 inset !important;
+    -webkit-text-fill-color: #b9bbbe !important;
+}
+
 body {
     background-color: #003B6D;
     color: #b9bbbe;
@@ -106,3 +111,13 @@ a {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+
+
+
+
+
+
+
+
+
+
