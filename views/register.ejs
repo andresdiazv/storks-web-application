@@ -13,17 +13,7 @@
         <% if (error) { %>
         <div><%= error %></div>
         <% } %>
-
         <form action="/register" method="POST">
-          <div class="login-box-input">
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Name"
-              required
-            />
-          </div>
           <div class="login-box-input">
             <input
               type="email"
@@ -46,8 +36,8 @@
             <input type="submit" value="Register" />
           </div>
           <div class="login-box-footer">
-          <p>Already have an account? <a href="/login">Login</a></p>
-        </div>
+            <p>Already have an account? <a href="/login">Login</a></p>
+          </div>
         </form>
       </div>
     </div>
