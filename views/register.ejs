@@ -11,13 +11,12 @@
       <div class="login-box">
         <img src="\images\image.png" alt="Avatar" class="resize-image" />
         <% if (error) { %>
-        <div><%= error %></div>
+        <div class="error-message"><%= error %></div>
         <% } %>
         <form action="/register" method="POST">
           <div class="login-box-input">
             <input
               type="email"
-              id="email"
               name="email"
               placeholder="Email"
               required
@@ -26,7 +25,6 @@
           <div class="login-box-input">
             <input
               type="password"
-              id="password"
               name="password"
               placeholder="Password"
               required

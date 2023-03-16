@@ -8,6 +8,16 @@ const app = express();
 
 const path = require("path");
 
+app.use(
+  session({
+    secret: "secret",
+
+    resave: false,
+
+    saveUninitialized: false,
+  })
+);
+
 const initializePassport = require("./passportConfig");
 initializePassport(passport);
 
@@ -20,7 +30,7 @@ admin.initializeApp({
 
 const db = admin.database();
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
@@ -56,36 +66,34 @@ app.get("/register", (req, res) => {
   res.render("register", {
     error: req.flash("error"),
     success: req.flash("success"),
+    message: req.flash("message"), // add this line
   });
 });
 
 app.post("/register", (req, res) => {
-  const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
 
-  if (!name || !email || !password) {
-    req.flash("error", "All fields are required.");
+  if (!email || !password) {
+    req.flash("error", "Please provide both email and password.");
     res.redirect("/register");
     return;
   }
 
   admin
     .auth()
-    .createUser({
-      email: email,
-      password: password,
-    })
-    .then((userRecord) => {
+    .createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
       // Create a reference to the user's data in the database
       const userRef = db.ref("users");
 
       // Save the user's data to the database
       const newUserRef = userRef.push();
       newUserRef.set({
-        name: name,
-        email: email,
-        uid: userRecord.uid,
+        email: user.email,
+        uid: user.uid,
         // Add more properties here as needed
       });
 
@@ -135,7 +143,6 @@ app.post("/login", (req, res) => {
       res.redirect("/login");
     });
 });
-
 
 app.get("/dashboard", verifyIdToken, (req, res) => {
   const uid = req.uid; // Retrieve the user's UID from the ID token
