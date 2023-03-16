@@ -9,36 +9,31 @@
   </head>
   <body>
     <div class="container">
-      <img src="\images\image.png" alt="Avatar" class="resize-image" />
-      <form action="/login" method="POST">
-        <div class="btn-container">
-          <div class="text-space">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Email"
-              required
-            />
+      <div class="login-box">
+        <% if (message) { %>
+        <p class="error"><%= message %></p>
+        <% } %>
+        <img src="\images\image.png" alt="Avatar" class="resize-image" />
+        <form action="/login" method="POST">
+          <div class="login-box-input">
+            <input type="email" name="email" placeholder="Email" required />
           </div>
-          <div class="text-space">
+          <div class="login-box-input">
             <input
               type="password"
-              id="password"
               name="password"
               placeholder="Password"
               required
             />
           </div>
-          <% if (message) { %>
-          <p class="error"><%= message %></p>
-          <% } %>
-          <div class="text-space">
-            <button class="login-btn" type="submit" value="Login">Login</button>
+          <div>
+            <input type="submit" value="Login" />
           </div>
-          <a href="/register">Register</a>
+        </form>
+        <div class="login-box-footer">
+          <p>Need an account? <a href="/register">Register</a></p>
         </div>
-      </form>
+      </div>
     </div>
   </body>
 </html>
