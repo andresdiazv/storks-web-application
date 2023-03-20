@@ -114,6 +114,10 @@ app.get("/dashboard", (req, res) => {
   res.render("dashboard");
 });
 
+app.get("/profile-page", (req, res) => {
+  res.render("profile-page");
+});
+
 //logout
 app.get("/logout", (req, res) => {
   res.redirect("/login");
