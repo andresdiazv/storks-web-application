@@ -19,10 +19,6 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-const ref = db.ref("restricted_access/secret_document");
-ref.once("value", (snapshot) => {
-  console.log(snapshot.val());
-});
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
