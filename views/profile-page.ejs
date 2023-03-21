@@ -16,15 +16,13 @@
             <img id="profile-image" img src="Profile_Image.webp" class="rounded">
         </div>
 
-        <div class="chooseFile">
         <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
             <label for="image">Choose an image to upload:</label>
-            <input type="file" name="image" id="image" class="imagep">
+            <input type="file" name="image" id="image">
             <br>
-            <!-- <input type="submit" value="Upload"> -->
+            <input type="submit" value="Upload">
         </form>
-        </div>
-        
+
         <script>
             const input = document.getElementById('image');
             const img = document.getElementById('profile-image');
@@ -51,8 +49,10 @@
 
         <div class="ButtonWrap">
         <div>
+            <a href="FavorsPage.html">
             <button type="button1" class="b1">Favor counter</button>
-            <a href="Rewards.html">
+            </a>
+            <a href="RewardsPage.html">
                 <button type="button2" class="b2">Rewards</button>
             </a>
             <button type="button3" class="b3">Logout</button>
