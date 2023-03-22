@@ -133,9 +133,27 @@ app.get("/dashboard", (req, res) => {
   }
 });
 
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+}
 
-app.get("/profile-page", (req, res) => {
-  res.render("profile-page");
+app.get("/profile-page", checkAuthenticated, (req, res) => {
+  const userId = req.user.uid;
+
+  // Retrieve user data from Firebase Realtime Database
+  db.ref(`users/${userId}`)
+    .once("value")
+    .then((snapshot) => {
+      const userData = snapshot.val();
+      res.render("profile-page", { user: userData });
+    })
+    .catch((error) => {
+      console.error("Error retrieving user data:", error);
+      res.status(500).send("Error retrieving user data");
+    });
 });
 
 app.post(
@@ -187,10 +205,12 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.post('/logout', function(req, res, next) {
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('/');
+app.post("/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
   });
 });
 
