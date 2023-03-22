@@ -37,7 +37,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
@@ -49,6 +48,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const name = req.body.name;
 
   admin
     .auth()
@@ -57,15 +57,13 @@ app.post("/register", (req, res) => {
       password: password,
     })
     .then((userRecord) => {
-      // Create a reference to the user's data in the database
       const userRef = db.ref("users/" + userRecord.uid);
 
-      // Save the user's data to the database
       userRef.set({
+        name: name,
         email: userRecord.email,
         password: password,
         uid: userRecord.uid,
-        // Add more properties here as needed
       });
 
       admin
@@ -82,10 +80,9 @@ app.post("/register", (req, res) => {
       res.render("register", { error: error.message });
     });
 });
-// login start
 app.get("/login", (req, res) => {
-  let message = req.flash("error")[0]; // retrieve the first error message from the flash array
-  res.render("login", { message }); // pass in the error message as a variable to the login template
+  let message = req.flash("error")[0];
+  res.render("login", { message });
 });
 
 app.post("/login", (req, res) => {
@@ -105,10 +102,8 @@ app.post("/login", (req, res) => {
         .catch((error) => {
           res.render("login", { error: error.message });
         });
-    })
+    });
 });
-
-// login end
 
 app.get("/dashboard", (req, res) => {
   res.render("dashboard");
@@ -118,11 +113,13 @@ app.get("/profile-page", (req, res) => {
   res.render("profile-page");
 });
 
-//logout
+app.get("/favors-page", (req, res) => {
+  res.render("favors-page");
+});
+
 app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
-
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

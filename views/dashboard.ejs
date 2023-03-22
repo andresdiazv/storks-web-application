@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="/stylesheets/dashboard.css">
-</head>
-<body>
-  <h1>Welcome to your Dashboard</h1>
-  <a href="/logout">Logout</a>
-  <script src="/javascripts/dashboard.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/dashboard.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo-container">
+          <img src="/images/image.png" alt="Logo" class="logo-circle" />
+          <a href="/" class="logo">STORKS</a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="/favors-page">Favors</a></li>
+          <li><a href="/rewards-page">Rewards</a></li>
+          <li><a href="/profile-page">Profile</a></li>
+        </ul>
+        <a href="/create-task" class="create-task-btn">+ Create new task</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Welcome, User!</h1>
+          <p>Let's start accomplishing your tasks with STORKS.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/dashboard.js"></script>
+  </body>
 </html>
