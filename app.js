@@ -4,7 +4,12 @@ const serviceAccount = require("./serviceAccountKey.json");
 const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
+const multer = require("multer");
 const app = express();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const path = require("path");
 
@@ -50,68 +55,129 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const name = req.body.name;
 
-  admin
-    .auth()
-    .createUser({
-      email: email,
-      password: password,
-    })
-    .then((userRecord) => {
-      const userRef = db.ref("users/" + userRecord.uid);
+  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    if (err) {
+      console.error("Error hashing password:", err);
+      res.status(500).send("Error hashing password");
+      return;
+    }
 
-      userRef.set({
-        name: name,
-        email: userRecord.email,
+    admin
+      .auth()
+      .createUser({
+        email: email,
         password: password,
-        uid: userRecord.uid,
-      });
+      })
+      .then((userRecord) => {
+        const userRef = db.ref("users/" + userRecord.uid);
 
-      admin
-        .auth()
-        .createCustomToken(userRecord.uid)
-        .then((customToken) => {
-          res.redirect(`/dashboard?token=${customToken}`);
-        })
-        .catch((error) => {
-          res.render("login", { error: error.message });
+        userRef.set({
+          name: name,
+          email: userRecord.email,
+          password: hashedPassword,
+          uid: userRecord.uid,
         });
-    })
-    .catch((error) => {
-      res.render("register", { error: error.message });
-    });
+
+        admin
+          .auth()
+          .createCustomToken(userRecord.uid)
+          .then((customToken) => {
+            res.redirect(`/dashboard?token=${customToken}`);
+          })
+          .catch((error) => {
+            res.render("login", { error: error.message });
+          });
+      })
+      .catch((error) => {
+        res.render("register", { error: error.message });
+      });
+  });
 });
+
 app.get("/login", (req, res) => {
   let message = req.flash("error")[0];
   res.render("login", { message });
 });
 
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  admin
-    .auth()
-    .getUserByEmail(email)
-    .then((userRecord) => {
-      admin
-        .auth()
-        .createCustomToken(userRecord.uid)
-        .then((customToken) => {
-          res.redirect(`/dashboard?token=${customToken}`);
-        })
-        .catch((error) => {
-          res.render("login", { error: error.message });
-        });
-    });
+app.get("/login", (req, res) => {
+  let message = req.flash("error")[0];
+  res.render("login", { message });
 });
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
 
 app.get("/dashboard", (req, res) => {
-  res.render("dashboard");
+  if (req.isAuthenticated()) {
+    const userId = req.user.uid;
+
+    // Retrieve user data from Firebase Realtime Database
+    db.ref(`users/${userId}`)
+      .once("value")
+      .then((snapshot) => {
+        const userData = snapshot.val();
+        res.render("dashboard", { user: userData });
+      })
+      .catch((error) => {
+        console.error("Error retrieving user data:", error);
+        res.status(500).send("Error retrieving user data");
+      });
+  } else {
+    res.redirect("/login");
+  }
 });
+
 
 app.get("/profile-page", (req, res) => {
   res.render("profile-page");
 });
+
+app.post(
+  "/upload-profile-picture",
+  upload.single("profilePicture"),
+  (req, res) => {
+    const file = req.file;
+    const userId = req.user.uid; // Assuming the user ID is stored in req.user.uid
+
+    if (file) {
+      // Upload the profile picture to Firebase Storage
+      const bucket = admin.storage().bucket();
+      const fileName = `profile_pictures/${userId}.jpg`;
+      const fileUpload = bucket.file(fileName);
+
+      const uploadStream = fileUpload.createWriteStream({
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+
+      uploadStream.on("error", (error) => {
+        console.error("Error uploading file:", error);
+        res.status(500).send("Error uploading file");
+      });
+
+      uploadStream.on("finish", () => {
+        // Save the profile picture URL to Firebase Realtime Database
+        const profilePictureUrl = `https://firebasestorage.googleapis.com/v0/b/${
+          bucket.name
+        }/o/${encodeURIComponent(fileName)}?alt=media`;
+        db.ref(`users/${userId}/profilePictureUrl`).set(profilePictureUrl);
+
+        res.redirect("/profile-page");
+      });
+
+      uploadStream.end(file.buffer);
+    } else {
+      res.status(400).send("No file received");
+    }
+  }
+);
 
 app.get("/favors-page", (req, res) => {
   res.render("favors-page");
@@ -119,6 +185,13 @@ app.get("/favors-page", (req, res) => {
 
 app.get("/logout", (req, res) => {
   res.redirect("/login");
+});
+
+app.post('/logout', function(req, res, next) {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
 });
 
 app.listen(port, () => {

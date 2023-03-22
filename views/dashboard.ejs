@@ -11,6 +11,11 @@
       href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
       rel="stylesheet"
     />
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdaCbAP6tXJ5zSGES45HyQmgd8ZzV3IO8&callback=initMap"
+      async
+      defer
+    ></script>
     <title>Dashboard</title>
   </head>
   <body>
@@ -20,25 +25,88 @@
           <img src="/images/image.png" alt="Logo" class="logo-circle" />
           <a href="/" class="logo">STORKS</a>
         </div>
+        <!-- ... -->
         <ul class="nav-links">
           <li><a href="/favors-page">Favors</a></li>
           <li><a href="/rewards-page">Rewards</a></li>
           <li><a href="/profile-page">Profile</a></li>
         </ul>
-        <a href="/create-task" class="create-task-btn">+ Create new task</a>
+        <div class="button-container">
+          <a href="/create-task" class="create-task-btn">+ Create new task</a>
+          <form action="/logout" method="POST" class="logout-form">
+            <button type="submit" class="logout-btn">Logout</button>
+          </form>
+        </div>
+        <!-- ... -->
       </nav>
     </header>
 
     <main>
       <section class="hero">
         <div class="hero-content">
-          <h1>Welcome, User!</h1>
+          <h1>
+            Welcome, <%= user.name.charAt(0).toUpperCase() + user.name.slice(1)
+            %>!
+          </h1>
           <p>Let's start accomplishing your tasks with STORKS.</p>
         </div>
       </section>
+      <div>
+        <div id="map" style="width: 100%; height: 400px"></div>
+      </div>
     </main>
+    <script>
+      const userProfilePictureUrl = "<%= user.profilePictureUrl %>";
+    </script>
+    <script>
+      let userMarker;
 
-    <script src="/js/firebase-config.js"></script>
-    <script src="/js/dashboard.js"></script>
+      function initMap() {
+        const mapOptions = {
+          center: { lat: 25.757028, lng: -80.3732 },
+          zoom: 17,
+        };
+        const map = new google.maps.Map(
+          document.getElementById("map"),
+          mapOptions
+        );
+
+        // Function to update user location
+        function updateUserLocation(position) {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.setCenter(userLocation);
+
+          if (!userMarker) {
+            userMarker = new google.maps.Marker({
+              position: userLocation,
+              map: map,
+              icon: userProfilePictureUrl || "/images/default-avatar.png", // Use the user's profile picture if available
+            });
+          } else {
+            userMarker.setPosition(userLocation);
+          }
+        }
+
+        // Use Geolocation API to track the user's location
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(updateUserLocation);
+
+          navigator.geolocation.watchPosition(
+            updateUserLocation,
+            (error) => {
+              console.log("Error getting user location", error);
+            },
+            {
+              enableHighAccuracy: true,
+              maximumAge: 0,
+              timeout: Infinity,
+            }
+          );
+        }
+      }
+    </script>
   </body>
 </html>
