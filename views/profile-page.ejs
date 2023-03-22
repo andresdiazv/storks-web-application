@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="Profile-Page.css">
+    <link rel="stylesheet" href="/stylesheets/profile-page.css">
     <link rel="javascript" href="Profile-Page.js">
 </head>
     <body>
@@ -13,14 +13,14 @@
     <div class="boxed">
 
         <div class="image">
-            <img id="profile-image" img src="Profile_Image.webp" class="rounded">
+            <img id="profile-image" img src="/images/Default-image.png" class="rounded">
         </div>
 
         <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
             <label for="image">Choose an image to upload:</label>
             <input type="file" name="image" id="image">
             <br>
-            <input type="submit" value="Upload">
+            <!-- <input type="submit" value="Upload"> -->
         </form>
 
         <script>
