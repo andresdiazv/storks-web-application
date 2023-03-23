@@ -1,3 +1,5 @@
+// express is a node.js web app framework
+// layer built on Node.js that helps manage servers and routes
 const express = require("express");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
@@ -37,15 +39,17 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-
+// directs user to login page at root
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
+// directs user to the register.ejs page if /register is added to the root
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
+// 
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -126,4 +130,14 @@ app.get("/logout", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
+});
+
+// 
+app.get("/favors", (req, res) => {
+  res.render("FavorsPage");
+});
+
+// 
+app.get("/favors", function(req, res) {
+  res.render('table', {data: data});
 });
