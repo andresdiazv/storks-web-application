@@ -44,16 +44,32 @@ h3{
     background-color: #1565c0;
     width: 570px;
     height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     /* background: linear-gradient(to bottom, #1565c0, #42a5f5); */
 }
-.b1{
-    font-size: 20px;
+.button {
+    width: 100px ;
+    height: 40px ;
+    font-size: 15px;
     font-family: sans-serif;
     border: 2px solid;
     border-radius: 10px;
-    margin-left: 40px;
+    cursor: pointer;
+    margin: 0 10px;
+}
+.message{
+    margin-left: 20px;
+}
+/* .b1{
+    font-size: 15px;
+    font-family: sans-serif;
+    border: 2px solid;
+    border-radius: 10px;
     margin-block-start: 10px;
     cursor: pointer;
+
 }
 .b2{
     margin-left: 80px;
@@ -63,12 +79,14 @@ h3{
     cursor: pointer;
 }
 .b3{
-    margin-left: 90px;
+    margin-left: 190px;
     font-size: 20px;   
     border: 2px solid;
     border-radius: 10px;
     cursor: pointer;
-}
+    
+    
+} */
 /* .wrapper{
     border: 2px solid;
     height: 550px;

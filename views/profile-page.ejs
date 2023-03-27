@@ -17,11 +17,12 @@
         </div>
 
         <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
-            <label for="image">Choose an image to upload:</label>
+            <label for="image" class="message">Choose an image to upload:</label>
             <input type="file" name="image" id="image">
             <br>
             <!-- <input type="submit" value="Upload"> -->
         </form>
+        
 
         <script>
             const input = document.getElementById('image');
@@ -49,18 +50,18 @@
         </div>
 
         <div class="ButtonWrap">
-        <div>
+        
             <a href="favors-page.ejs">
-            <button type="button1" class="b1">Favor counter</button>
+            <button type="button1" class="b1 button">Favor counter</button>
             </a>
             <a href="rewards-page.ejs">
-                <button type="button2" class="b2">Rewards</button>
+                <button type="button2" class="b2 button">Rewards</button>
             </a>
             <form action="/logout" method="POST">
-              <button type="button3" class="b3">Logout</button>
+              <button type="button3" class="b3 button">Logout</button>
             </form>
         
-        </div>
+    
         </div>
         </div>
 
