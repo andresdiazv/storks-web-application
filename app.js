@@ -1,19 +1,19 @@
-// express is a node.js web app framework
-// layer built on Node.js that helps manage servers and routes
 const express = require("express");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
 const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
+const bcrypt = require("bcrypt");
 const app = express();
+const key = "<firebase-api-key>";
 
 const path = require("path");
 
 const initializePassport = require("./passportConfig");
 initializePassport(passport);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -28,9 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
     secret: "secret",
-
     resave: false,
-
     saveUninitialized: false,
   })
 );
@@ -50,66 +48,62 @@ app.get("/register", (req, res) => {
 });
 
 // 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  admin
-    .auth()
-    .createUser({
+  try {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const userRecord = await admin.auth().createUser({
       email: email,
-      password: password,
-    })
-    .then((userRecord) => {
-      // Create a reference to the user's data in the database
-      const userRef = db.ref("users/" + userRecord.uid);
-
-      // Save the user's data to the database
-      userRef.set({
-        email: userRecord.email,
-        password: password,
-        uid: userRecord.uid,
-        // Add more properties here as needed
-      });
-
-      admin
-        .auth()
-        .createCustomToken(userRecord.uid)
-        .then((customToken) => {
-          res.redirect(`/dashboard?token=${customToken}`);
-        })
-        .catch((error) => {
-          res.render("login", { error: error.message });
-        });
-    })
-    .catch((error) => {
-      res.render("register", { error: error.message });
+      password: hashedPassword,
     });
+
+    // Create a reference to the user's data in the database
+    const userRef = db.ref("users/" + userRecord.uid);
+
+    // Save the user's data to the database
+    userRef.set({
+      email: userRecord.email,
+      password: hashedPassword,
+      uid: userRecord.uid,
+      // Add more properties here as needed
+    });
+
+    const customToken = await admin.auth().createCustomToken(userRecord.uid);
+    res.redirect(`/dashboard?token=${customToken}`);
+  } catch (error) {
+    res.render("register", { error: error.message });
+  }
 });
+
 // login start
 app.get("/login", (req, res) => {
   let message = req.flash("error")[0]; // retrieve the first error message from the flash array
   res.render("login", { message }); // pass in the error message as a variable to the login template
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  admin
-    .auth()
-    .getUserByEmail(email)
-    .then((userRecord) => {
-      admin
-        .auth()
-        .createCustomToken(userRecord.uid)
-        .then((customToken) => {
-          res.redirect(`/dashboard?token=${customToken}`);
-        })
-        .catch((error) => {
-          res.render("login", { error: error.message });
-        });
-    })
+  try {
+    const userRecord = await admin.auth().getUserByEmail(email);
+    const isMatch = await bcrypt.compare(password, userRecord.password);
+
+    if (isMatch) {
+      const customToken = await admin.auth().createCustomToken(userRecord.uid);
+      res.redirect(`/dashboard?token=${customToken}`);
+    } else {
+      req.flash("error", "Invalid credentials");
+      res.redirect("/login");
+    }
+  } catch (error) {
+    req.flash("error", "Invalid credentials");
+    res.redirect("/login");
+  }
 });
 
 // login end
@@ -122,22 +116,18 @@ app.get("/profile-page", (req, res) => {
   res.render("profile-page");
 });
 
+
 //logout
 app.get("/logout", (req, res) => {
-  res.redirect("/login");
+res.redirect("/login");
 });
 
 
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+console.log(`Server listening on port ${port}`);
 });
 
 // 
 app.get("/favors", (req, res) => {
-  res.render("FavorsPage");
-});
-
-// 
-app.get("/favors", function(req, res) {
-  res.render('table', {data: data});
+res.render("favors");
 });
