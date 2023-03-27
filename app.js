@@ -4,9 +4,17 @@ const serviceAccount = require("./serviceAccountKey.json");
 const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
+<<<<<<< HEAD
 const bcrypt = require("bcrypt");
 const app = express();
 const key = "<firebase-api-key>";
+=======
+const multer = require("multer");
+const app = express();
+const bcrypt = require("bcrypt");
+const { Storage } = require('@google-cloud/storage');
+const saltRounds = 10;
+>>>>>>> d8aa213df363b135f541c2ef1dd356645878108d
 
 const path = require("path");
 
@@ -18,6 +26,12 @@ const port = process.env.PORT || 3001;
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://storks-4753a-default-rtdb.firebaseio.com",
+  storageBucket: "storks-4753a.appspot.com",
+});
+
+const storage = new Storage({
+  projectId: "storks-4753a",
+  keyFilename: "./serviceAccountKey.json",
 });
 
 const db = admin.database();
@@ -37,7 +51,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+<<<<<<< HEAD
 // directs user to login page at root
+=======
+>>>>>>> d8aa213df363b135f541c2ef1dd356645878108d
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
@@ -51,7 +68,9 @@ app.get("/register", (req, res) => {
 app.post("/register", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const name = req.body.name;
 
+<<<<<<< HEAD
   try {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -80,11 +99,53 @@ app.post("/register", async (req, res) => {
 });
 
 // login start
-app.get("/login", (req, res) => {
-  let message = req.flash("error")[0]; // retrieve the first error message from the flash array
-  res.render("login", { message }); // pass in the error message as a variable to the login template
+=======
+  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    if (err) {
+      console.error("Error hashing password:", err);
+      res.status(500).send("Error hashing password");
+      return;
+    }
+
+    admin
+      .auth()
+      .createUser({
+        email: email,
+        password: password,
+      })
+      .then((userRecord) => {
+        const userRef = db.ref("users/" + userRecord.uid);
+
+        userRef.set({
+          name: name,
+          email: userRecord.email,
+          password: hashedPassword,
+          uid: userRecord.uid,
+        });
+
+        admin
+          .auth()
+          .createCustomToken(userRecord.uid)
+          .then((customToken) => {
+            res.redirect(`/dashboard?token=${customToken}`);
+          })
+          .catch((error) => {
+            res.render("login", { error: error.message });
+          });
+      })
+      .catch((error) => {
+        res.render("register", { error: error.message });
+      });
+  });
 });
 
+>>>>>>> d8aa213df363b135f541c2ef1dd356645878108d
+app.get("/login", (req, res) => {
+  let message = req.flash("error")[0];
+  res.render("login", { message });
+});
+
+<<<<<<< HEAD
 app.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -104,24 +165,85 @@ app.post("/login", async (req, res) => {
     req.flash("error", "Invalid credentials");
     res.redirect("/login");
   }
+=======
+app.get("/login", (req, res) => {
+  let message = req.flash("error")[0];
+  res.render("login", { message });
+>>>>>>> d8aa213df363b135f541c2ef1dd356645878108d
 });
 
-// login end
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
 
 app.get("/dashboard", (req, res) => {
-  res.render("dashboard");
+  if (req.isAuthenticated()) {
+    const userId = req.user.uid;
+
+    db.ref(`users/${userId}`)
+      .once("value")
+      .then((snapshot) => {
+        const userData = snapshot.val();
+        res.render("dashboard", { user: userData });
+      })
+      .catch((error) => {
+        console.error("Error retrieving user data:", error);
+        res.status(500).send("Error retrieving user data");
+      });
+  } else {
+    res.redirect("/login");
+  }
 });
 
-app.get("/profile-page", (req, res) => {
-  res.render("profile-page");
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+}
+
+app.get("/profile-page", checkAuthenticated, (req, res) => {
+  const userId = req.user.uid;
+
+  db.ref(`users/${userId}`)
+    .once("value")
+    .then((snapshot) => {
+      const userData = snapshot.val();
+      res.render("profile-page", { user: userData });
+    })
+    .catch((error) => {
+      console.error("Error retrieving user data:", error);
+      res.status(500).send("Error retrieving user data");
+    });
 });
 
+
+app.get("/favors-page", (req, res) => {
+  res.render("favors-page");
+});
+
+<<<<<<< HEAD
 
 //logout
+=======
+>>>>>>> d8aa213df363b135f541c2ef1dd356645878108d
 app.get("/logout", (req, res) => {
 res.redirect("/login");
 });
 
+app.post("/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
 
 app.listen(port, () => {
 console.log(`Server listening on port ${port}`);

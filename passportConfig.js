@@ -1,21 +1,62 @@
-const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const admin = require("firebase-admin");
+const bcrypt = require("bcrypt");
 
-function initializePassport() {
-  passport.use(new LocalStrategy(
-    function(username, password, done) {
-        // Your authentication logic here
-        
-    }
-  ));
+function initialize(passport) {
+  const authenticateUser = (email, password, done) => {
+    admin
+      .auth()
+      .getUserByEmail(email)
+      .then((userRecord) => {
+        // Get the user data from the Realtime Database
+        admin
+          .database()
+          .ref(`users/${userRecord.uid}`)
+          .once("value")
+          .then((snapshot) => {
+            const userData = snapshot.val();
 
-  passport.serializeUser(function(user, done) {
-    done(null, user.id);
+            // Compare the entered password with the stored hashed password
+            bcrypt.compare(password, userData.password, (err, isMatch) => {
+              if (err) {
+                return done(err);
+              }
+
+              if (isMatch) {
+                return done(null, userData);
+              } else {
+                return done(null, false, { message: "Incorrect password" });
+              }
+            });
+          })
+          .catch((error) => {
+            return done(null, false, { message: "Error retrieving user data" });
+          });
+      })
+      .catch((error) => {
+        return done(null, false, { message: "No user with that email" });
+      });
+  };
+
+  passport.use(new LocalStrategy({ usernameField: "email" }, authenticateUser));
+
+  passport.serializeUser((user, done) => {
+    done(null, user.uid);
   });
 
-  passport.deserializeUser(function(id, done) {
-    // Your deserialization logic here
+  passport.deserializeUser((id, done) => {
+    admin
+      .database()
+      .ref(`users/${id}`)
+      .once("value")
+      .then((snapshot) => {
+        const userData = snapshot.val();
+        return done(null, userData);
+      })
+      .catch((error) => {
+        return done(error);
+      });
   });
 }
 
-module.exports = initializePassport;
+module.exports = initialize;
