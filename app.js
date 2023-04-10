@@ -180,3 +180,11 @@ app.post("/logout", function (req, res, next) {
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+app.get('/create-task', function(req, res) {
+  // Handle the request and render the appropriate view
+});
+
+app.get("/favor-popup1", (req, res) => {
+  res.render("favor-popup1");
+});
