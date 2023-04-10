@@ -7,7 +7,8 @@ const session = require("express-session");
 const multer = require("multer");
 const app = express();
 const bcrypt = require("bcrypt");
-const { Storage } = require('@google-cloud/storage');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const saltRounds = 10;
 
 const path = require("path");
@@ -21,11 +22,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://storks-4753a-default-rtdb.firebaseio.com",
   storageBucket: "storks-4753a.appspot.com",
-});
-
-const storage = new Storage({
-  projectId: "storks-4753a",
-  keyFilename: "./serviceAccountKey.json",
 });
 
 const db = admin.database();
@@ -159,9 +155,40 @@ app.get("/profile-page", checkAuthenticated, (req, res) => {
     });
 });
 
-
 app.get("/favors-page", (req, res) => {
   res.render("favors-page");
+});
+
+app.post("/upload", checkAuthenticated, upload.single("image"), (req, res) => {
+  const userId = req.user.uid;
+  const file = req.file;
+  const bucket = admin.storage().bucket();
+  const filename = `profile.jpg`;
+  const fileUpload = bucket.file(`${userId}/${filename}`);
+
+  const stream = fileUpload.createWriteStream({
+    metadata: {
+      contentType: file.mimetype,
+    },
+  });
+
+  stream.on("error", (error) => {
+    console.error("Error uploading file:", error);
+    res.status(500).send("Error uploading file");
+  });
+
+  stream.on("finish", () => {
+    fileUpload.makePublic().then(() => {
+      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${userId}/${filename}`;
+      const userRef = db.ref(`users/${userId}`);
+      userRef.update({
+        profilePicture: imageUrl,
+      });
+      res.redirect("/profile-page");
+    });
+  });
+
+  stream.end(file.buffer);
 });
 
 app.get("/logout", (req, res) => {
@@ -181,8 +208,37 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
 
-app.get('/create-task', function(req, res) {
-  // Handle the request and render the appropriate view
+app.post("/create-task", checkAuthenticated, (req, res) => {
+  const userId = req.user.uid;
+  const name = req.body.markerTitle;
+  const phoneNumber = req.body.markerPhone;
+  const address = req.body.markerAddress;
+  const description = req.body.markerDescription;
+
+  // Create a new favor node in the database
+  const favorsRef = db.ref(`favors/${userId}`);
+  const newFavorRef = favorsRef.push();
+  newFavorRef
+    .set({
+      name: name,
+      phoneNumber: phoneNumber,
+      address: address,
+      description: description,
+    })
+    .then(() => {
+      const markerRef = db.ref(`markers/${userId}/${newFavorRef.key}`);
+      markerRef.set({
+        name: name,
+        phoneNumber: phoneNumber,
+        address: address,
+        description: description,
+      });
+      res.redirect("/dashboard");
+    })
+    .catch((error) => {
+      console.error("Error creating task:", error);
+      res.status(500).send("Error creating task");
+    });
 });
 
 app.get("/favor-popup1", (req, res) => {
