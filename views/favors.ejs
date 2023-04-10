@@ -11,68 +11,61 @@
     <img class="logo" src="Storks Simple Logo.png" alt="Logo">
     <img class="logo" src="StorksLogoTransparent.png" alt="Logo">
 
-    <script>
-        var database = require('./app');
-        // Use the database reference to query the database
-        var usersRef = database.ref('users');
-        usersRef.on('value', function(snapshot) {
-        // Do something with the data
-        });
-    </script>
-
-
     <h1>[Users] Favors</h1>
     <h2>Active Favors</h2>
-    <h3>### Requested</h3>
-    <h3>### Assigned</h3>
 
     <div class="table-wrapper">
         <table class="fl-table">
-            <thead>
-                <tr>
-                    <th>Posted Date</th>
-                    <th>Scheduled Date</th>
-                    <th>Title</th>
-                    <th>Location</th>
-                    <th>Details</th>
-                </tr>
+            <tr>
+                <th>Scheduled Date</th>
+                <th>Requested</th>
+                <th>Assigned</th>
+                <th>Title</th>
+                <th>Location</th>
+                <th>Details</th>
+              </tr>
             </thead>
             <tbody>
+              <% Object.keys(favors).forEach((favorId) => { %>
                 <tr>
-                    <th>Posted Date</th>
-                    <th>Scheduled Date</th>
-                    <th>Title</th>
-                    <th>Location</th>
-                    <th>Details</th>                </tr>
+                    <td><%= favors[favorId].scheduled_date %></td>
+                    <td><%= favors[favorId].user_requested %></td>
+                    <td><%= favors[favorId].user_assigned %></td>
+                    <td><%= favors[favorId].title %></td>
+                    <td><%= favors[favorId].location %></td>
+                    <td><%= favors[favorId].details %></td>
+                </tr>
+              <% }); %>
             </tbody>
-        </table>
+          </table>
     </div>
-</body>
+
 <h2>Completed Favors</h2>
-    <h3>### Requested</h3>
-    <h3>### Assigned</h3>
 
     <div class="table-wrapper">
         <table class="fl-table">
-            <thead>
-                <tr>
-                    <th>Posted Date</th>
-                    <th>Scheduled Date</th>
-                    <th>Title</th>
-                    <th>Location</th>
-                    <th>Details</th>
-                </tr>
+            <tr>
+                <th>Date Completed</th>
+                <th>Requested</th>
+                <th>Assigned</th>
+                <th>Title</th>
+                <th>Location</th>
+                <th>Details</th>
+              </tr>
             </thead>
             <tbody>
+              <% Object.keys(favors).forEach((favorId) => { %>
                 <tr>
-                    <th>Posted Date</th>
-                    <th>Scheduled Date</th>
-                    <th>Title</th>
-                    <th>Location</th>
-                    <th>Details</th>                
+                    <td><%= favors[favorId].completed_date %></td>
+                    <td><%= favors[favorId].user_requested %></td>
+                    <td><%= favors[favorId].user_assigned %></td>
+                    <td><%= favors[favorId].title %></td>
+                    <td><%= favors[favorId].location %></td>
+                    <td><%= favors[favorId].details %></td>
                 </tr>
+              <% }); %>
             </tbody>
-        </table>
+          </table>
     </div>
 </body>
 </html>

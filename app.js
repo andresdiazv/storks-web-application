@@ -4,9 +4,12 @@ const serviceAccount = require("./serviceAccountKey.json");
 const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
-const bcrypt = require("bcrypt");
+const multer = require("multer");
 const app = express();
-const key = "<firebase-api-key>";
+const bcrypt = require("bcrypt");
+const { Storage } = require('@google-cloud/storage');
+const saltRounds = 10;
+const funcs = require("functions.js");
 
 const path = require("path");
 
@@ -18,9 +21,16 @@ const port = process.env.PORT || 3000;
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://storks-4753a-default-rtdb.firebaseio.com",
+  storageBucket: "storks-4753a.appspot.com",
+});
+
+const storage = new Storage({
+  projectId: "storks-4753a",
+  keyFilename: "./serviceAccountKey.json",
 });
 
 const db = admin.database();
+
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -28,7 +38,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
     secret: "secret",
+
     resave: false,
+
     saveUninitialized: false,
   })
 );
@@ -37,79 +49,122 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// directs user to login page at root
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
-// directs user to the register.ejs page if /register is added to the root
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
-// 
-app.post("/register", async (req, res) => {
+app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-
-  try {
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const userRecord = await admin.auth().createUser({
-      email: email,
-      password: hashedPassword,
-    });
-
-    // Create a reference to the user's data in the database
-    const userRef = db.ref("users/" + userRecord.uid);
-
-    // Save the user's data to the database
-    userRef.set({
-      email: userRecord.email,
-      password: hashedPassword,
-      uid: userRecord.uid,
-      // Add more properties here as needed
-    });
-
-    const customToken = await admin.auth().createCustomToken(userRecord.uid);
-    res.redirect(`/dashboard?token=${customToken}`);
-  } catch (error) {
-    res.render("register", { error: error.message });
+  const name = req.body.name;
+  var registerUser = registerUser(email, password, email);
+  if (registerUser == 1){
+    res.status(500).send("Error hashing password");
   }
+  else{
+    
+  }
+
+        admin
+          .auth()
+          .createCustomToken(userRecord.uid)
+          .then((customToken) => {
+            res.redirect(`/dashboard?token=${customToken}`);
+          })
+          .catch((error) => {
+            res.render("login", { error: error.message });
+          });
+      })
+      .catch((error) => {
+        res.render("register", { error: error.message });
+      });
+  });
 });
 
-// login start
 app.get("/login", (req, res) => {
-  let message = req.flash("error")[0]; // retrieve the first error message from the flash array
-  res.render("login", { message }); // pass in the error message as a variable to the login template
+  let message = req.flash("error")[0];
+  res.render("login", { message });
 });
 
-app.post("/login", async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+app.get("/login", (req, res) => {
+  let message = req.flash("error")[0];
+  res.render("login", { message });
+});
 
-  try {
-    const userRecord = await admin.auth().getUserByEmail(email);
-    const isMatch = await bcrypt.compare(password, userRecord.password);
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
 
-    if (isMatch) {
-      const customToken = await admin.auth().createCustomToken(userRecord.uid);
-      res.redirect(`/dashboard?token=${customToken}`);
-    } else {
-      req.flash("error", "Invalid credentials");
-      res.redirect("/login");
-    }
-  } catch (error) {
-    req.flash("error", "Invalid credentials");
+app.get("/dashboard", (req, res) => {
+  if (req.isAuthenticated()) {
+    const userId = req.user.uid;
+
+    db.ref(`users/${userId}`)
+      .once("value")
+      .then((snapshot) => {
+        const userData = snapshot.val();
+        res.render("dashboard", { user: userData });
+      })
+      .catch((error) => {
+        console.error("Error retrieving user data:", error);
+        res.status(500).send("Error retrieving user data");
+      });
+  } else {
     res.redirect("/login");
   }
 });
 
-// login end
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+}
 
-app.get("/dashboard", (req, res) => {
-  res.render("dashboard");
+app.get("/profile-page", checkAuthenticated, (req, res) => {
+  const userId = req.user.uid;
+
+  db.ref(`users/${userId}`)
+    .once("value")
+    .then((snapshot) => {
+      const userData = snapshot.val();
+      res.render("profile-page", { user: userData });
+    })
+    .catch((error) => {
+      console.error("Error retrieving user data:", error);
+      res.status(500).send("Error retrieving user data");
+    });
+});
+
+
+app.get("/favors", (req, res) => {
+  res.render("favors");
+});
+
+app.get("/logout", (req, res) => {
+  res.redirect("/login");
+});
+
+app.post("/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
 
 app.get("/profile-page", (req, res) => {
@@ -150,21 +205,37 @@ function getDatabaseSnapshot(db, path_to_data) {
   const databaseRef = db.ref(path_to_data);
   databaseRef.once('value')
     .then((snapshot) => {
+      const userData = snapshot.val();
+      res.render("profile-page", { user: userData });
       const data = snapshot.val();
     })
-    return data;
+  app.get("/favors-page", (req, res) => {
+  res.render("favors-page");
+  });
+  return data;
 }
 
-function populateFavorsPage(db, userId){
-  return 0;
+// populate favor's page
+var favorsRef = db.ref('favors');
+
+// Define an array to store the retrieved favors data
+var favorsArray = [];
+
+// Retrieve the favors data from your database
+favorsRef.once('value', function(snapshot) {
+  snapshot.forEach(function(childSnapshot) {
+    var childKey = childSnapshot.key;
+    var childData = childSnapshot.val();
+    // push the child data into the favorsArray
+    favorsArray.push(childData);
+  });
+  // call a function to update your HTML page with the favorsArray data
+  updateHTML(favorsArray);
+});
+
+// Define a function to update your HTML page with the favorsArray data
+function updateHTML(favorsArray) {
+  // use the favorsArray data to populate your HTML page
+  // for example, you can loop through the array and create HTML elements for each favor
+  // and then append them to a container element on your page
 }
-
-//logout
-app.get("/logout", (req, res) => {
-res.redirect("/login");
-});
-
-app.listen(port, () => {
-console.log(`Server listening on port ${port}`);
-});
-
