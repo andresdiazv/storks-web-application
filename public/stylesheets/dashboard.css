@@ -3,6 +3,18 @@
   padding: 0;
   box-sizing: border-box;
 }
+.default-img {
+  height: 20%;
+  width: 20%;
+}
+#map {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 580px;
+  width: 90%;
+  border-radius: 10px;
+}
 
 body {
   font-family:'Roboto', sans-serif;;
