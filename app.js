@@ -9,6 +9,7 @@ const app = express();
 const bcrypt = require("bcrypt");
 const { Storage } = require('@google-cloud/storage');
 const saltRounds = 10;
+const funcs = require("functions.js");
 
 const path = require("path");
 
@@ -29,6 +30,7 @@ const storage = new Storage({
 });
 
 const db = admin.database();
+
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -59,29 +61,13 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const name = req.body.name;
-
-  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-    if (err) {
-      console.error("Error hashing password:", err);
-      res.status(500).send("Error hashing password");
-      return;
-    }
-
-    admin
-      .auth()
-      .createUser({
-        email: email,
-        password: password,
-      })
-      .then((userRecord) => {
-        const userRef = db.ref("users/" + userRecord.uid);
-
-        userRef.set({
-          name: name,
-          email: userRecord.email,
-          password: hashedPassword,
-          uid: userRecord.uid,
-        });
+  var registerUser = registerUser(email, password, email);
+  if (registerUser == 1){
+    res.status(500).send("Error hashing password");
+  }
+  else{
+    
+  }
 
         admin
           .auth()
@@ -160,8 +146,8 @@ app.get("/profile-page", checkAuthenticated, (req, res) => {
 });
 
 
-app.get("/favors-page", (req, res) => {
-  res.render("favors-page");
+app.get("/favors", (req, res) => {
+  res.render("favors");
 });
 
 app.get("/logout", (req, res) => {
