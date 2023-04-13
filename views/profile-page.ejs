@@ -14,7 +14,7 @@
         <img
           id="profile-image"
           img
-          src="<%= user.profilePicture || '/images/default-img.png' %>"
+          src="<%= user.profilePicture ? user.profilePicture + '?t=' + Date.now() : '/images/default-img.png' %>"
           class="rounded"
         />
       </div>
@@ -62,9 +62,9 @@
           <button type="button2" class="b2 button">Rewards</button>
         </a>
         <a href="/dashboard">
-            <button type="button" class="button">Dashboard</button>
-          </a>
-        
+          <button type="button" class="button">Dashboard</button>
+        </a>
+
         <form action="/logout" method="POST">
           <button type="button3" class="b3 button">Logout</button>
         </form>

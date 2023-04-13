@@ -132,7 +132,7 @@
     <script>
       // Get user profile picture URL
       const userProfilePictureUrl =
-        "<%= user.profilePicture || '/images/default-img.png' %>";
+        "<%= user.profilePicture ? user.profilePicture + '?t=' + Date.now() : '/images/default-img.png' %>";
       let userMarker;
 
       function initMap() {
