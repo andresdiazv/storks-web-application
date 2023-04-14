@@ -133,6 +133,7 @@ app.get("/dashboard", (req, res) => {
   }
 });
 
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -216,7 +217,7 @@ app.post("/create-task", checkAuthenticated, (req, res) => {
   const description = req.body.markerDescription;
 
   // Create a new favor node in the database
-  const favorsRef = db.ref(`favors/${userId}`);
+  const favorsRef = db.ref("favors");
   const newFavorRef = favorsRef.push();
   newFavorRef
     .set({

@@ -186,29 +186,38 @@
           const description =
             document.getElementById("marker-description").value;
 
-          const infoWindowContent = `
-      <div>
-        <h4>${name}</h4>
-        <p>Phone Number: ${phoneNumber}</p>
-        <p>Address: ${address}</p>
-        <p>What do you need help with?: ${description}</p>
-      </div>
-    `;
+          const favorsRef = db.ref("favors");
+          favorsRef.on("child_added", (snapshot) => {
+            const favorData = snapshot.val();
+            const markerPosition = {
+              lat: favorData.latitude,
+              lng: favorData.longitude,
+            };
 
-          const marker = new google.maps.Marker({
-            position: map.getCenter(),
-            map: map,
-          });
+            const infoWindowContent = `
+              <div>
+                <h4>${favorData.title}</h4>
+                <p>Phone Number: ${favorData.phone}</p>
+                <p>Address: ${favorData.address}</p>
+                <p>What do you need help with?: ${favorData.description}</p>
+              </div>
+            `;
 
-          const infoWindow = new google.maps.InfoWindow({
-            content: infoWindowContent,
-          });
+            const marker = new google.maps.Marker({
+              position: map.markerPosition,
+              map: map,
+            });
 
-          marker.addListener("click", function () {
+            const infoWindow = new google.maps.InfoWindow({
+              content: infoWindowContent,
+            });
+
+            marker.addListener("click", function () {
+              infoWindow.open(map, marker);
+            });
+
             infoWindow.open(map, marker);
           });
-
-          infoWindow.open(map, marker);
         });
 
         // Add click listener to add marker button
@@ -220,7 +229,6 @@
           const markerAddress = document.getElementById("marker-address").value;
           const markerDescription =
             document.getElementById("marker-description").value;
-
           // Create a new marker with the user's location
           const marker = new google.maps.Marker({
             position: userMarker.getPosition(),
@@ -244,7 +252,7 @@
 
           // Store the marker data to Firebase
           const userId = "<%= user.uid %>";
-          const favorsRef = db.ref(`favors/${userId}`);
+          const favorsRef = db.ref("favors");
           const favorData = {
             title: markerTitle,
             phone: markerPhone,
