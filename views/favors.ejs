@@ -8,6 +8,26 @@
     <title>Your Favors</title>
 </head>
 <body>
+  <header>
+    <nav class="navbar">
+      <div class="logo-container">
+        <img src="/images/image.png" alt="Logo" class="logo-circle" />
+        <a href="/" class="logo">STORKS</a>
+      </div>
+      <!-- ... -->
+      <ul class="nav-links">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/rewards-page">Rewards</a></li>
+        <li><a href="/profile-page">Profile</a></li>
+      </ul>
+      <div class="button-container">
+        <form action="/logout" method="POST" class="logout-form">
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </div>
+      <!-- ... -->
+    </nav>
+  </header>
     <h1> <%= user.name.charAt(0).toUpperCase() + user.name.slice(1) %>'s Favors</h1>
     <h2>Active Favors</h2>
 
