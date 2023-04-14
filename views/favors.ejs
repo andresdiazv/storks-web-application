@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="FavorsPage.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/favors.css">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Favors</title>
 </head>
 <body>
-    <img class="logo" src="Storks Simple Logo.png" alt="Logo">
-    <img class="logo" src="StorksLogoTransparent.png" alt="Logo">
-
-    <h1>[Users] Favors</h1>
+    <h1> <%= user.name.charAt(0).toUpperCase() + user.name.slice(1) %>'s Favors</h1>
     <h2>Active Favors</h2>
 
     <div class="table-wrapper">
         <table class="fl-table">
-            <tr>
+            <thead>
+              <tr>
                 <th>Scheduled Date</th>
                 <th>Requested</th>
                 <th>Assigned</th>
@@ -26,26 +24,27 @@
               </tr>
             </thead>
             <tbody>
-              <% Object.keys(favors).forEach((favorId) => { %>
+              <% active.forEach((favor) => { %>
                 <tr>
-                    <td><%= favors[favorId].scheduled_date %></td>
-                    <td><%= favors[favorId].user_requested %></td>
-                    <td><%= favors[favorId].user_assigned %></td>
-                    <td><%= favors[favorId].title %></td>
-                    <td><%= favors[favorId].location %></td>
-                    <td><%= favors[favorId].details %></td>
+                    <td><%= favor.date_requested %></td>
+                    <td><%= favor.requested %></td>
+                    <td><%= favor.assigned %></td>
+                    <td><%= favor.name %></td>
+                    <td><%= favor.address %></td>
+                    <td><%= favor.description %></td>
                 </tr>
               <% }); %>
             </tbody>
           </table>
     </div>
 
-<h2>Completed Favors</h2>
+    <h2>Completed Favors</h2>
 
     <div class="table-wrapper">
         <table class="fl-table">
-            <tr>
-                <th>Date Completed</th>
+            <thead>
+              <tr>
+                <th>Completed Date</th>
                 <th>Requested</th>
                 <th>Assigned</th>
                 <th>Title</th>
@@ -54,14 +53,14 @@
               </tr>
             </thead>
             <tbody>
-              <% Object.keys(favors).forEach((favorId) => { %>
+              <% complete.forEach((favor) => { %>
                 <tr>
-                    <td><%= favors[favorId].completed_date %></td>
-                    <td><%= favors[favorId].user_requested %></td>
-                    <td><%= favors[favorId].user_assigned %></td>
-                    <td><%= favors[favorId].title %></td>
-                    <td><%= favors[favorId].location %></td>
-                    <td><%= favors[favorId].details %></td>
+                    <td><%= favor.date_completed %></td>
+                    <td><%= favor.requested %></td>
+                    <td><%= favor.assigned %></td>
+                    <td><%= favor.name %></td>
+                    <td><%= favor.address %></td>
+                    <td><%= favor.description %></td>
                 </tr>
               <% }); %>
             </tbody>
