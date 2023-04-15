@@ -122,7 +122,7 @@ app.get("/dashboard", (req, res) => {
       .once("value")
       .then((snapshot) => {
         const userData = snapshot.val();
-        res.render("dashboard", { user: userData });
+        res.render("dashboard", { user: userData, db: db});
       })
       .catch((error) => {
         console.error("Error retrieving user data:", error);
@@ -156,8 +156,8 @@ app.get("/profile-page", checkAuthenticated, (req, res) => {
     });
 });
 
-app.get("/favors-page", (req, res) => {
-  res.render("favors-page");
+app.get("/favors", (req, res) => {
+  res.render("favors");
 });
 
 app.post("/upload", checkAuthenticated, upload.single("image"), (req, res) => {
@@ -233,6 +233,44 @@ app.post("/create-task", checkAuthenticated, (req, res) => {
         phoneNumber: phoneNumber,
         address: address,
         description: description,
+      });
+      res.redirect("/dashboard");
+    })
+    .catch((error) => {
+      console.error("Error creating task:", error);
+      res.status(500).send("Error creating task");
+    });
+});
+
+app.post("/marker", checkAuthenticated, (req, res) => {
+  const userId = req.user.uid;
+  const markerTitle = req.body['marker-name'];
+  const markerPhone = req.body['marker-phone'];
+  const markerAddress = req.body['marker-address'];
+  const markerDescription = req.body['marker-description'];
+
+  // Create a new favor node in the database
+  const favorsRef = db.ref("favors");
+  const newFavorRef = favorsRef.push();
+  newFavorRef
+    .set({
+      user_requested: userId,
+      name: markerTitle,
+      phoneNumber: markerPhone,
+      address: markerAddress,
+      description: markerDescription,
+    })
+    .then(() => {
+      const markerRef = db.ref(`favors/${newFavorRef.key}`);
+      markerRef.set({
+        user_requested: userId,
+        user_assigned: 0,
+        date_requested: new Date().toJSON(),
+        date_completed: 0,
+        name: markerTitle,
+        phoneNumber: markerPhone,
+        address: markerAddress,
+        description: markerDescription,
       });
       res.redirect("/dashboard");
     })
