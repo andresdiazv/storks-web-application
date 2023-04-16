@@ -156,7 +156,8 @@ app.get("/profile-page", checkAuthenticated, (req, res) => {
 });
 
 function getUserName(userId) {
-  return db.ref(`users/${userId}`)
+  return db
+    .ref(`users/${userId}`)
     .once("value")
     .then((snapshot) => {
       const userData = snapshot.val();
@@ -185,20 +186,29 @@ app.get("/favors", (req, res) => {
         const activeFavors = [];
         activeSnapshot.forEach((favorSnapshot) => {
           const favorData = favorSnapshot.val();
-          if (favorData.user_assigned == userId || favorData.user_requested == userId) {
-            const assignedPromise = getUserName(favorSnapshot.val().user_assigned);
-            const requestedPromise = getUserName(favorSnapshot.val().user_requested);
-            Promise.all([assignedPromise, requestedPromise]).then(([assignedName, requestedName]) => {
-              activeFavors.push({
-                id: favorSnapshot.key,
-                ...favorSnapshot.val(),
-                assigned: assignedName,
-                requested: requestedName
+          if (
+            favorData.user_assigned == userId ||
+            favorData.user_requested == userId
+          ) {
+            const assignedPromise = getUserName(
+              favorSnapshot.val().user_assigned
+            );
+            const requestedPromise = getUserName(
+              favorSnapshot.val().user_requested
+            );
+            Promise.all([assignedPromise, requestedPromise])
+              .then(([assignedName, requestedName]) => {
+                activeFavors.push({
+                  id: favorSnapshot.key,
+                  ...favorSnapshot.val(),
+                  assigned: assignedName,
+                  requested: requestedName,
+                });
+              })
+              .catch((error) => {
+                console.error("Error retrieving user names:", error);
+                res.status(500).send("Error retrieving user names");
               });
-            }).catch((error) => {
-              console.error("Error retrieving user names:", error);
-              res.status(500).send("Error retrieving user names");
-            });
           }
         });
         // Get completed favors
@@ -210,20 +220,30 @@ app.get("/favors", (req, res) => {
             const completedFavors = [];
             completedSnapshot.forEach((favorSnapshot) => {
               const favorData = favorSnapshot.val();
-              if (favorData.date_completed !== 0 && (favorData.user_assigned == userId || favorData.user_requested == userId)) {
-                const assignedPromise = getUserName(favorSnapshot.val().user_assigned);
-                const requestedPromise = getUserName(favorSnapshot.val().user_requested);
-                Promise.all([assignedPromise, requestedPromise]).then(([assignedName, requestedName]) => {
-                  completedFavors.push({
-                    id: favorSnapshot.key,
-                    ...favorSnapshot.val(),
-                    assigned: assignedName,
-                    requested: requestedName
+              if (
+                favorData.date_completed !== 0 &&
+                (favorData.user_assigned == userId ||
+                  favorData.user_requested == userId)
+              ) {
+                const assignedPromise = getUserName(
+                  favorSnapshot.val().user_assigned
+                );
+                const requestedPromise = getUserName(
+                  favorSnapshot.val().user_requested
+                );
+                Promise.all([assignedPromise, requestedPromise])
+                  .then(([assignedName, requestedName]) => {
+                    completedFavors.push({
+                      id: favorSnapshot.key,
+                      ...favorSnapshot.val(),
+                      assigned: assignedName,
+                      requested: requestedName,
+                    });
+                  })
+                  .catch((error) => {
+                    console.error("Error retrieving user names:", error);
+                    res.status(500).send("Error retrieving user names");
                   });
-                }).catch((error) => {
-                  console.error("Error retrieving user names:", error);
-                  res.status(500).send("Error retrieving user names");
-                });
               }
             });
             // Get user data
@@ -231,12 +251,18 @@ app.get("/favors", (req, res) => {
               .once("value")
               .then((userSnapshot) => {
                 const userData = userSnapshot.val();
-                Promise.all([activeFavors, completedFavors]).then(([activeFavors, completedFavors]) => {
-                  res.render("favors", { user: userData, active: activeFavors, complete: completedFavors });
-                }).catch((error) => {
-                  console.error("Error retrieving favor data:", error);
-                  res.status(500).send("Error retrieving favor data");
-                });
+                Promise.all([activeFavors, completedFavors])
+                  .then(([activeFavors, completedFavors]) => {
+                    res.render("favors", {
+                      user: userData,
+                      active: activeFavors,
+                      complete: completedFavors,
+                    });
+                  })
+                  .catch((error) => {
+                    console.error("Error retrieving favor data:", error);
+                    res.status(500).send("Error retrieving favor data");
+                  });
               })
               .catch((error) => {
                 console.error("Error retrieving user data:", error);
@@ -270,70 +296,6 @@ function formatDate(date) {
     return `${month}-${day}-${year}`;
   }
 }
-
-app.post("/upload", checkAuthenticated, upload.single("image"), (req, res) => {
-  const userId = req.user.uid;
-  const file = req.file;
-  const bucket = admin.storage().bucket();
-  const filename = `profile.jpg`;
-  const fileUpload = bucket.file(`${userId}/${filename}`);
-
-  const stream = fileUpload.createWriteStream({
-    metadata: {
-      contentType: file.mimetype,
-    },
-  });
-
-  stream.on("error", (error) => {
-    console.error("Error uploading file:", error);
-    res.status(500).send("Error uploading file");
-  });
-
-  stream.on("finish", () => {
-    fileUpload.makePublic().then(() => {
-      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${userId}/${filename}`;
-      const userRef = db.ref(`users/${userId}`);
-      userRef.update({
-        profilePicture: imageUrl,
-      });
-      res.redirect("/profile-page");
-    });
-  });
-
-  stream.end(file.buffer);
-});
-
-app.post("/upload", checkAuthenticated, upload.single("image"), (req, res) => {
-  const userId = req.user.uid;
-  const file = req.file;
-  const bucket = admin.storage().bucket();
-  const filename = `profile.jpg`;
-  const fileUpload = bucket.file(`${userId}/${filename}`);
-
-  const stream = fileUpload.createWriteStream({
-    metadata: {
-      contentType: file.mimetype,
-    },
-  });
-
-  stream.on("error", (error) => {
-    console.error("Error uploading file:", error);
-    res.status(500).send("Error uploading file");
-  });
-
-  stream.on("finish", () => {
-    fileUpload.makePublic().then(() => {
-      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${userId}/${filename}`;
-      const userRef = db.ref(`users/${userId}`);
-      userRef.update({
-        profilePicture: imageUrl,
-      });
-      res.redirect("/profile-page");
-    });
-  });
-
-  stream.end(file.buffer);
-});
 
 app.post("/upload", checkAuthenticated, upload.single("image"), (req, res) => {
   const userId = req.user.uid;
@@ -442,7 +404,7 @@ app.post("/marker", checkAuthenticated, (req, res) => {
     .then(() => {
       const markerRef = db.ref(`favors/${newFavorRef.key}`);
       markerRef.set({
-        user_requested: userId,
+        uid: userId,
         user_assigned: 0,
         date_requested: new Date().toJSON(),
         date_completed: 0,

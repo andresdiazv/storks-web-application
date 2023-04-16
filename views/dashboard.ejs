@@ -175,13 +175,15 @@
     console.log("Geolocation is not supported by this browser.");
   }
 
-  // Create a new marker and info window when the "Add Marker" button is clicked
-  const addMarkerBtn2 = document.getElementById("add-marker-btn");
-  addMarkerBtn2.addEventListener("click", function() {
-    const name = document.getElementById("marker-title").value;
-    const phoneNumber = document.getElementById("marker-phone").value;
-    const address = document.getElementById("marker-address").value;
-    const description = document.getElementById("marker-description").value;
+        function createMarkersFromFavors() {
+        const favorsRef = firebase.database().ref("favors");
+
+        favorsRef.on("child_added", (snapshot, ) => {
+          const favor = snapshot.val();
+          const markerPosition = {
+            lat: favor.location.lat, // modified here
+            lng: favor.location.lng, // modified here
+          };
 
     const infoWindowContent = `
       <div>
