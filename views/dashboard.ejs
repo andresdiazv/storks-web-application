@@ -11,22 +11,21 @@
       href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
       rel="stylesheet"
     />
-    <!-- Add Bootstrap's CSS file -->
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     />
-
-    <!-- Add Bootstrap's JavaScript files -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdaCbAP6tXJ5zSGES45HyQmgd8ZzV3IO8&callback=initMap"
       async
       defer
     ></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <title>Dashboard</title>
   </head>
   <body>
@@ -36,9 +35,8 @@
           <img src="/images/image.png" alt="Logo" class="logo-circle" />
           <a href="/" class="logo">STORKS</a>
         </div>
-        <!-- ... -->
         <ul class="nav-links">
-          <li><a href="/favors-page">Favors</a></li>
+          <li><a href="/favors">Favors</a></li>
           <li><a href="/rewards-page">Rewards</a></li>
           <li><a href="/profile-page">Profile</a></li>
         </ul>
@@ -55,7 +53,6 @@
             <button type="submit" class="logout-btn">Logout</button>
           </form>
         </div>
-        <!-- ... -->
       </nav>
     </header>
 
@@ -70,7 +67,6 @@
         </div>
       </section>
 
-      <!-- HTML Modal for popup window 1-->
       <div
         class="modal fade"
         id="createTaskModal"
@@ -113,6 +109,7 @@
                   id="marker-description"
                   name="marker-description"
                 />
+                <input type="hidden" id="location" name="location" />
                 <button
                   type="button"
                   class="btn btn-secondary"
@@ -125,18 +122,6 @@
                 </button>
               </form>
             </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
-              <button type="button" class="btn btn-primary" id="add-marker-btn">
-                Add Marker
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -146,7 +131,7 @@
     </main>
 
     <script>
-      // Get user profile picture URL
+      // user's pfp
       const userProfilePictureUrl =
         "<%= user.profilePicture ? user.profilePicture + '?t=' + Date.now() : '/images/default-img.png' %>";
       let userMarker;
@@ -162,16 +147,14 @@
         );
 
         let userLocationMarker;
-
-        // Function to update user location
+        // updating user's location
         function updateUserLocation(position) {
           const userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
           map.setCenter(userLocation);
-
-          // User Location Marker
+          // user's marker on map (pfp)
           if (!userMarker) {
             userMarker = new google.maps.Marker({
               position: userLocation,
@@ -184,75 +167,70 @@
           } else {
             userMarker.setPosition(userLocation);
           }
+          const locationInput = document.getElementById("location");
+          locationInput.value = JSON.stringify(userLocation);
         }
-
-        // Get user's current location
+        // get user's location
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(updateUserLocation);
         } else {
           console.log("Geolocation is not supported by this browser.");
         }
 
-        // Create a new marker and info window when the "Add Marker" button is clicked
-        const addMarkerBtn2 = document.getElementById("add-marker-btn");
-        addMarkerBtn2.addEventListener("click", function () {
-          const name = document.getElementById("marker-title").value;
-          const phoneNumber = document.getElementById("marker-phone").value;
-          const address = document.getElementById("marker-address").value;
-          const description =
-            document.getElementById("marker-description").value;
+        function createMarkersFromFavors() {
+        const favorsRef = firebase.database().ref("favors");
 
-          const favorsRef = db.ref("favors");
-          favorsRef.on("child_added", (snapshot) => {
-            const favorData = snapshot.val();
-            const markerPosition = {
-              lat: favorData.latitude,
-              lng: favorData.longitude,
-            };
+        favorsRef.on("child_added", (snapshot) => {
+          const favor = snapshot.val();
+          const markerPosition = {
+            lat: favor.location.lat, // modified here
+            lng: favor.location.lng, // modified here
+          };
 
-            const infoWindowContent = `
-              <div>
-                <h4>${favorData.title}</h4>
-                <p>Phone Number: ${favorData.phone}</p>
-                <p>Address: ${favorData.address}</p>
-                <p>What do you need help with?: ${favorData.description}</p>
-              </div>
-            `;
+          const infoWindowContent = `
+            <div>
+              <h4>${favor.name}</h4>
+              <p>Phone Number: ${favor.phoneNumber}</p>
+              <p>Address: ${favor.address}</p>
+              <p>What do you need help with?: ${favor.description}</p>
+            </div>
+          `;
 
-            const marker = new google.maps.Marker({
-              position: map.markerPosition,
-              map: map,
-            });
+          const marker = new google.maps.Marker({
+            position: markerPosition,
+            map: map,
+          });
 
-            const infoWindow = new google.maps.InfoWindow({
-              content: infoWindowContent,
-            });
+          const infoWindow = new google.maps.InfoWindow({
+            content: infoWindowContent,
+          });
 
-            marker.addListener("click", function () {
-              infoWindow.open(map, marker);
-            });
-
+          marker.addListener("click", function () {
             infoWindow.open(map, marker);
           });
         });
+      }
 
-        // Add click listener to add marker button
+        createMarkersFromFavors(); // Call this function here
+
         const addMarkerBtn = document.getElementById("add-marker-btn");
         addMarkerBtn.addEventListener("click", function () {
-          // Get marker info from modal inputs
           const markerTitle = document.getElementById("marker-title").value;
           const markerPhone = document.getElementById("marker-phone").value;
           const markerAddress = document.getElementById("marker-address").value;
           const markerDescription =
             document.getElementById("marker-description").value;
-          // Create a new marker with the user's location
+
           const marker = new google.maps.Marker({
             position: userMarker.getPosition(),
             map: map,
             title: markerTitle,
+            icon: {
+              url: userProfilePictureUrl,
+              scaledSize: new google.maps.Size(30, 30),
+            },
           });
 
-          // Create an info window for the marker
           const infoWindow = new google.maps.InfoWindow({
             content:
               `<h3>${markerTitle}</h3>` +
@@ -260,24 +238,12 @@
               `<p>Address: ${markerAddress}</p>` +
               `<p>What do you need help with?: ${markerDescription}</p>`,
           });
+          //create loop so that when page loads, it creates markers from favors
 
-          // Add click listener to the marker to open the info window
+          // opens the info window when the marker is clicked
           marker.addListener("click", function () {
             infoWindow.open(map, marker);
           });
-
-          // Store the marker data to Firebase
-          const userId = "<%= user.uid %>";
-          const favorsRef = db.ref("favors");
-          const favorData = {
-            title: markerTitle,
-            phone: markerPhone,
-            address: markerAddress,
-            description: markerDescription,
-            latitude: marker.getPosition().lat(),
-            longitude: marker.getPosition().lng(),
-          };
-          favorsRef.push(favorData);
         });
       }
     </script>
