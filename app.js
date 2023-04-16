@@ -414,7 +414,6 @@ app.post("/marker", checkAuthenticated, (req, res) => {
       res.status(500).send("Error creating task");
     });
 });
-
 app.get("/favor-popup1", (req, res) => {
   res.render("favor-popup1");
 });
