@@ -6,66 +6,87 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Favors</title>
-</head>
-<body>
-    <img class="logo" src="Storks Simple Logo.png" alt="Logo">
-    <img class="logo" src="StorksLogoTransparent.png" alt="Logo">
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo-container">
+          <img src="/images/image.png" alt="Logo" class="logo-circle" />
+          <a href="/" class="logo">STORKS</a>
+        </div>
+        <!-- ... -->
+        <ul class="nav-links">
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/rewards-page">Rewards</a></li>
+          <li><a href="/profile-page">Profile</a></li>
+        </ul>
+        <div class="button-container">
+          <form action="/logout" method="POST" class="logout-form">
+            <button type="submit" class="logout-btn">Logout</button>
+          </form>
+        </div>
+        <!-- ... -->
+      </nav>
+    </header>
+    <h1>
+      <%= user.name.charAt(0).toUpperCase() + user.name.slice(1) %>'s Favors
+    </h1>
 
-    <h1>[Users] Favors</h1>
     <h2>Active Favors</h2>
 
     <div class="table-wrapper">
-        <table class="fl-table">
-            <tr>
-                <th>Scheduled Date</th>
-                <th>Requested</th>
-                <th>Assigned</th>
-                <th>Title</th>
-                <th>Location</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% Object.keys(favors).forEach((favorId) => { %>
-                <tr>
-                    <td><%= favors[favorId].scheduled_date %></td>
-                    <td><%= favors[favorId].user_requested %></td>
-                    <td><%= favors[favorId].user_assigned %></td>
-                    <td><%= favors[favorId].title %></td>
-                    <td><%= favors[favorId].location %></td>
-                    <td><%= favors[favorId].details %></td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
+      <table class="fl-table">
+        <thead>
+          <tr>
+            <th>Completed Date</th>
+            <th>Requested</th>
+            <th>Assigned</th>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% complete.forEach((favor) => { %>
+          <tr>
+            <td><%= favor.date_completed %></td>
+            <td><%= favor.requested %></td>
+            <td><%= favor.assigned %></td>
+            <td><%= favor.name %></td>
+            <td><%= favor.address %></td>
+            <td><%= favor.description %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
     </div>
-
     <h2>Completed Favors</h2>
 
     <div class="table-wrapper">
-        <table class="fl-table">
-            <tr>
-                <th>Date Completed</th>
-                <th>Requested</th>
-                <th>Assigned</th>
-                <th>Title</th>
-                <th>Location</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% Object.keys(favors).forEach((favorId) => { %>
-                <tr>
-                    <td><%= favors[favorId].completed_date %></td>
-                    <td><%= favors[favorId].user_requested %></td>
-                    <td><%= favors[favorId].user_assigned %></td>
-                    <td><%= favors[favorId].title %></td>
-                    <td><%= favors[favorId].location %></td>
-                    <td><%= favors[favorId].details %></td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
+      <table class="fl-table">
+        <thead>
+          <tr>
+            <th>Scheduled Date</th>
+            <th>Requested</th>
+            <th>Assigned</th>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% active.forEach((favor) => { %>
+          <tr>
+            <td><%= favor.date_requested %></td>
+            <td><%= favor.requested %></td>
+            <td><%= favor.assigned %></td>
+            <td><%= favor.name %></td>
+            <td><%= favor.address %></td>
+            <td><%= favor.description %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
     </div>
   </body>
 </html>

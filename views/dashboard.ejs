@@ -117,7 +117,11 @@
                 >
                   Close
                 </button>
-                <button type="submit" class="btn btn-primary">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="add-marker-btn"
+                >
                   Add Marker
                 </button>
               </form>
@@ -185,62 +189,65 @@
             lng: favor.location.lng, // modified here
           };
 
-    const infoWindowContent = `
-      <div>
-        <h4>${name}</h4>
-        <p>Phone Number: ${phoneNumber}</p>
-        <p>Address: ${address}</p>
-        <p>What do you need help with?: ${description}</p>
-      </div>
-    `;
+          const infoWindowContent = `
+            <div>
+              <h4>${favor.name}</h4>
+              <p>Phone Number: ${favor.phoneNumber}</p>
+              <p>Address: ${favor.address}</p>
+              <p>What do you need help with?: ${favor.description}</p>
+            </div>
+          `;
 
-    const marker = new google.maps.Marker({
-      position: map.getCenter(),
-      map: map,
-    });
+          const marker = new google.maps.Marker({
+            position: markerPosition,
+            map: map,
+          });
 
-    const infoWindow = new google.maps.InfoWindow({
-      content: infoWindowContent,
-    });
+          const infoWindow = new google.maps.InfoWindow({
+            content: infoWindowContent,
+          });
 
-    marker.addListener("click", function() {
-      infoWindow.open(map, marker);
-    });
+          marker.addListener("click", function () {
+            infoWindow.open(map, marker);
+          });
+        });
+      }
 
-    infoWindow.open(map, marker);
-  });
+        createMarkersFromFavors(); // Call this function here
 
-  // Add click listener to add marker button
-const addMarkerBtn = document.getElementById("add-marker-btn");
-addMarkerBtn.addEventListener("click", function () {
-// Get marker info from modal inputs
-const markerTitle = document.getElementById("marker-title").value;
-const markerPhone = document.getElementById("marker-phone").value;
-const markerAddress = document.getElementById("marker-address").value;
-const markerDescription = document.getElementById("marker-description").value;
+        const addMarkerBtn = document.getElementById("add-marker-btn");
+        addMarkerBtn.addEventListener("click", function () {
+          const markerTitle = document.getElementById("marker-title").value;
+          const markerPhone = document.getElementById("marker-phone").value;
+          const markerAddress = document.getElementById("marker-address").value;
+          const markerDescription =
+            document.getElementById("marker-description").value;
 
-// Create a new marker with the user's location
-const marker = new google.maps.Marker({
-        position: userMarker.getPosition(),
-        map: map,
-        title: markerTitle,
-      });
-      
-      // Create an info window for the marker
-      const infoWindow = new google.maps.InfoWindow({
-        content:
-          `<h3>${markerTitle}</h3>` +
-          `<p>Phone Number: ${markerPhone}</p>` +
-          `<p>Address: ${markerAddress}</p>` +
-          `<p>What do you need help with?: ${markerDescription}</p>`
-      });
+          const marker = new google.maps.Marker({
+            position: userMarker.getPosition(),
+            map: map,
+            title: markerTitle,
+            icon: {
+              url: userProfilePictureUrl,
+              scaledSize: new google.maps.Size(30, 30),
+            },
+          });
 
-      // Add click listener to the marker to open the info window
-      marker.addListener("click", function () {
-        infoWindow.open(map, marker);
-      });
-    });
-  }
-      </script>
-    </body>
-  </html> 
+          const infoWindow = new google.maps.InfoWindow({
+            content:
+              `<h3>${markerTitle}</h3>` +
+              `<p>Phone Number: ${markerPhone}</p>` +
+              `<p>Address: ${markerAddress}</p>` +
+              `<p>What do you need help with?: ${markerDescription}</p>`,
+          });
+          //create loop so that when page loads, it creates markers from favors
+
+          // opens the info window when the marker is clicked
+          marker.addListener("click", function () {
+            infoWindow.open(map, marker);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

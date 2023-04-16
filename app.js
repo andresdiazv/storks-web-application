@@ -122,7 +122,28 @@ app.get("/dashboard", (req, res) => {
       .once("value")
       .then((snapshot) => {
         const userData = snapshot.val();
-        res.render("dashboard", { user: userData, db: db });
+
+        // Fetch markers from the database
+        db.ref("favors")
+          .once("value")
+          .then((markerSnapshot) => {
+            const markersData = markerSnapshot.val();
+            const markersArray = [];
+
+            for (const key in markersData) {
+              markersArray.push(markersData[key]);
+            }
+
+            res.render("dashboard", {
+              user: userData,
+              db: db,
+              markers: markersArray,
+            });
+          })
+          .catch((error) => {
+            console.error("Error retrieving markers data:", error);
+            res.status(500).send("Error retrieving markers data");
+          });
       })
       .catch((error) => {
         console.error("Error retrieving user data:", error);
@@ -174,110 +195,82 @@ function getUserName(userId) {
 }
 
 // start favors
-app.get("/favors", (req, res) => {
+app.get("/favors", checkAuthenticated, async (req, res) => {
   if (req.isAuthenticated()) {
     const userId = req.user.uid;
+
     // Get active favors
-    db.ref("favors")
+    const activeFavorsSnapshot = await db
+      .ref("favors")
       .orderByChild("date_completed")
       .equalTo(0)
-      .once("value")
-      .then((activeSnapshot) => {
-        const activeFavors = [];
-        activeSnapshot.forEach((favorSnapshot) => {
-          const favorData = favorSnapshot.val();
-          if (
-            favorData.user_assigned == userId ||
-            favorData.user_requested == userId
-          ) {
-            const assignedPromise = getUserName(
-              favorSnapshot.val().user_assigned
-            );
-            const requestedPromise = getUserName(
-              favorSnapshot.val().user_requested
-            );
-            Promise.all([assignedPromise, requestedPromise])
-              .then(([assignedName, requestedName]) => {
-                activeFavors.push({
-                  id: favorSnapshot.key,
-                  ...favorSnapshot.val(),
-                  assigned: assignedName,
-                  requested: requestedName,
-                });
-              })
-              .catch((error) => {
-                console.error("Error retrieving user names:", error);
-                res.status(500).send("Error retrieving user names");
-              });
-          }
-        });
-        // Get completed favors
-        db.ref("favors")
-          .orderByChild("date_completed")
-          .limitToLast(10)
-          .once("value")
-          .then((completedSnapshot) => {
-            const completedFavors = [];
-            completedSnapshot.forEach((favorSnapshot) => {
-              const favorData = favorSnapshot.val();
-              if (
-                favorData.date_completed !== 0 &&
-                (favorData.user_assigned == userId ||
-                  favorData.user_requested == userId)
-              ) {
-                const assignedPromise = getUserName(
-                  favorSnapshot.val().user_assigned
-                );
-                const requestedPromise = getUserName(
-                  favorSnapshot.val().user_requested
-                );
-                Promise.all([assignedPromise, requestedPromise])
-                  .then(([assignedName, requestedName]) => {
-                    completedFavors.push({
-                      id: favorSnapshot.key,
-                      ...favorSnapshot.val(),
-                      assigned: assignedName,
-                      requested: requestedName,
-                    });
-                  })
-                  .catch((error) => {
-                    console.error("Error retrieving user names:", error);
-                    res.status(500).send("Error retrieving user names");
-                  });
-              }
-            });
-            // Get user data
-            db.ref(`users/${userId}`)
-              .once("value")
-              .then((userSnapshot) => {
-                const userData = userSnapshot.val();
-                Promise.all([activeFavors, completedFavors])
-                  .then(([activeFavors, completedFavors]) => {
-                    res.render("favors", {
-                      user: userData,
-                      active: activeFavors,
-                      complete: completedFavors,
-                    });
-                  })
-                  .catch((error) => {
-                    console.error("Error retrieving favor data:", error);
-                    res.status(500).send("Error retrieving favor data");
-                  });
-              })
-              .catch((error) => {
-                console.error("Error retrieving user data:", error);
-                res.status(500).send("Error retrieving user data");
-              });
-          })
-          .catch((error) => {
-            console.error("Error retrieving completed favors:", error);
-            res.status(500).send("Error retrieving completed favors");
-          });
-      })
-      .catch((error) => {
-        console.error("Error retrieving active favors:", error);
-        res.status(500).send("Error retrieving active favors");
-      });
+      .once("value");
+
+    const activeFavorsPromises = [];
+    activeFavorsSnapshot.forEach((favorSnapshot) => {
+      const favorData = favorSnapshot.val();
+      if (
+        favorData.user_assigned == userId ||
+        favorData.user_requested == userId
+      ) {
+        const assignedPromise = getUserName(favorData.user_assigned);
+        const requestedPromise = getUserName(favorData.user_requested);
+        activeFavorsPromises.push(
+          Promise.all([assignedPromise, requestedPromise]).then(
+            ([assignedName, requestedName]) => ({
+              id: favorSnapshot.key,
+              ...favorSnapshot.val(),
+              assigned: assignedName,
+              requested: requestedName,
+            })
+          )
+        );
+      }
+    });
+
+    const activeFavors = await Promise.all(activeFavorsPromises);
+
+    // Get completed favors
+    const completedFavorsSnapshot = await db
+      .ref("favors")
+      .orderByChild("date_completed")
+      .limitToLast(10)
+      .once("value");
+
+    const completedFavorsPromises = [];
+    completedFavorsSnapshot.forEach((favorSnapshot) => {
+      const favorData = favorSnapshot.val();
+      if (
+        favorData.date_completed !== 0 &&
+        (favorData.user_assigned == userId ||
+          favorData.user_requested == userId)
+      ) {
+        const assignedPromise = getUserName(favorData.user_assigned);
+        const requestedPromise = getUserName(favorData.user_requested);
+        completedFavorsPromises.push(
+          Promise.all([assignedPromise, requestedPromise]).then(
+            ([assignedName, requestedName]) => ({
+              id: favorSnapshot.key,
+              ...favorSnapshot.val(),
+              assigned: assignedName,
+              requested: requestedName,
+            })
+          )
+        );
+      }
+    });
+
+    const completedFavors = await Promise.all(completedFavorsPromises);
+
+    // Get user data
+    const userSnapshot = await db.ref(`users/${userId}`).once("value");
+    const userData = userSnapshot.val();
+
+    res.render("favors", {
+      user: userData,
+      active: activeFavors,
+      complete: completedFavors,
+    });
   } else {
     res.render("favors");
   }
@@ -415,7 +408,6 @@ app.post("/marker", checkAuthenticated, (req, res) => {
         latitude: location.lat,
         longitude: location.lng,
       });
-      res.redirect("/dashboard");
     })
     .catch((error) => {
       console.error("Error creating task:", error);

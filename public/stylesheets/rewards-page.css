@@ -1,172 +1,276 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #1565c0;
-    padding: 20px;
-  }
-  
-  h1 {
-    font-size: 36px;
-    color: #ffffff;
-    text-align: center;
-    margin-top: 50px;
-  }
-  h2{
-    font-size: 20px;
-    margin-left: 50px;
-  }
-  h3{
-    font-size: 20px;
-    font-family:Arial, Helvetica, sans-serif
-  }
-  
-  p {
-    font-size: 15px;
-    color: #fffbfb;
-    text-align: center;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    margin-right: 5%;
-  }
-  
-h2 {
-    font-size: 24px;
-    color: #ffffff;
-    margin-top: 50px;
-    margin-bottom: 20px;
-    text-align: center;
-    
-  }
-  
-  ul {
-    list-style: disc;
-    margin-left: 30px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  ul, ol {
-    list-style: none;
-    margin-left: 0;
-    padding-left: 0;
-  }
-  
-  
-  li {
-        display: block;
-        font-size: 18px;
-        color: #ffffff;
-        margin-bottom: 10px;
-        margin-left: 35%;
-        background-color: rgba(255, 255, 255, 0.2);
-        padding: 10px;
-        border-radius: 5px;
-        width: 30%
-        
-      }
-  
-  .reward-container {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .reward-box {
-    width: 40%;
-    margin: 0 10px;
-    margin-left: 10%;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #e5e5e5;
-    border-radius: 5px;
-  }
-  
-  .reward-box h3 {
-    margin-top: 0;
-    text-align: center;
-  }
-  
-  .reward-box p {
-    margin-top: 10px;
-  }
-  
-  .reward-box .points {
-    color: #1565c0;
-    font-weight: bold;
-    font-size: 24px;
-  }
-  
-  .reward-box .redeem-button {
-    margin-top: 20px;
-    background-color: #1565c0;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  .reward-box .redeem-button:hover {
-    background-color: #95c2f5;
-  }  
-  .history-box {
-    width: 40%;
-    margin: 0 5px;
-    margin-right: 10%;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #e5e5e5;
-    border-radius: 5px;
-  }
-  .history-box h3 {
-    margin-top: 0;
-    text-align: center;
-  }
-  .reward-history {
-    margin-top: 10px;
-    padding: 0;
-    list-style: none;
-    text-align: center;
-  }
-  .reward-entry {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1.5px solid #1565c0;
-    border-radius: 5px;
-    font-size: 18px;
-    color: #1565c0;
-  }
-  
-  .reward-entry .date {
-    font-weight: bold;
-  }
-  
-  .reward-entry .points {
-    color: #1565c0;
-  }
-.redeem-button{
-    margin: 20px auto 0;
-    display: block;
+  font-family: Arial, sans-serif;
+  background-color: #1565c0;
+  padding: 20px;
 }
+
+h1 {
+  font-size: 36px;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 50px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-left: 50px;
+}
+
+h3 {
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif
+}
+
+p {
+  font-size: 15px;
+  color: #fffbfb;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-right: 5%;
+}
+
+h2 {
+  font-size: 24px;
+  color: #ffffff;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  text-align: center;
+
+}
+
+ul {
+  list-style: disc;
+  margin-left: 30px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+
+li {
+  display: block;
+  font-size: 18px;
+  color: #ffffff;
+  margin-bottom: 10px;
+  margin-left: 35%;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 5px;
+  width: 30%
+}
+
+.reward-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.reward-box {
+  width: 40%;
+  margin: 0 10px;
+  margin-left: 10%;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+}
+
+.reward-box h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.reward-box p {
+  margin-top: 10px;
+}
+
+.reward-box .points {
+  color: #1565c0;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.reward-box .redeem-button {
+  margin-top: 20px;
+  background-color: #1565c0;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reward-box .redeem-button:hover {
+  background-color: #95c2f5;
+}
+
+.history-box {
+  width: 40%;
+  margin: 0 5px;
+  margin-right: 10%;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+}
+
+.history-box h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.reward-history {
+  margin-top: 10px;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.reward-entry {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1.5px solid #1565c0;
+  border-radius: 5px;
+  font-size: 18px;
+  color: #1565c0;
+}
+
+.reward-entry .date {
+  font-weight: bold;
+}
+
+.reward-entry .points {
+  color: #1565c0;
+}
+
+.redeem-button {
+  margin: 20px auto 0;
+  display: block;
+}
+
 .title-b {
-    background-color: #ffffff;
-    border-radius: 5px;
-    padding: 20px;
-    margin-bottom: 30px;
-    margin: 0 300px;
-  }
-  
-  .title-b h2 {
-    font-size: 36px;
-    color: #1565c0;
-    text-align: center;
-    margin: 0;
-    
-  }
-  .title-b h4{
-    font-size: 15px;
-    padding: 10px;
-    color: #000000;
-    text-align: center;
-    margin: 0;
-  }
-  
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 30px;
+  margin: 0 300px;
+}
+
+.title-b h2 {
+  font-size: 36px;
+  color: #1565c0;
+  text-align: center;
+  margin: 0;
+
+}
+
+.title-b h4 {
+  font-size: 15px;
+  padding: 10px;
+  color: #000000;
+  text-align: center;
+  margin: 0;
+}
+
+header {
+  width: 100%;
+  background-color: #003B6D;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: relative;
+
+}
+
+.navbar .logo {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+}
+
+.nav-links li {
+  list-style: none;
+}
+
+.nav-links a {
+  display: block;
+  color: #fff;
+  padding: 0 1rem;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #f0f0f0;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+}
+
+.hero {
+  margin: 10px;
+}
+
+.hero-content {
+  color: #bdc1c6;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-circle {
+  width: 30px;
+  height: 30px;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+}
+
+.logout-btn {
+  display: inline-block;
+  background-color: #003B6D;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #fff;
+  color: #003B6D;
+}
