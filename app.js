@@ -122,7 +122,28 @@ app.get("/dashboard", (req, res) => {
       .once("value")
       .then((snapshot) => {
         const userData = snapshot.val();
-        res.render("dashboard", { user: userData, db: db });
+
+        // Fetch markers from the database
+        db.ref("favors")
+          .once("value")
+          .then((markerSnapshot) => {
+            const markersData = markerSnapshot.val();
+            const markersArray = [];
+
+            for (const key in markersData) {
+              markersArray.push(markersData[key]);
+            }
+
+            res.render("dashboard", {
+              user: userData,
+              db: db,
+              markers: markersArray,
+            });
+          })
+          .catch((error) => {
+            console.error("Error retrieving markers data:", error);
+            res.status(500).send("Error retrieving markers data");
+          });
       })
       .catch((error) => {
         console.error("Error retrieving user data:", error);
@@ -415,7 +436,6 @@ app.post("/marker", checkAuthenticated, (req, res) => {
         latitude: location.lat,
         longitude: location.lng,
       });
-      res.redirect("/dashboard");
     })
     .catch((error) => {
       console.error("Error creating task:", error);
