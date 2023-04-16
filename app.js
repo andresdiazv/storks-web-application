@@ -122,7 +122,7 @@ app.get("/dashboard", (req, res) => {
       .once("value")
       .then((snapshot) => {
         const userData = snapshot.val();
-        res.render("dashboard", { user: userData, db: db});
+        res.render("dashboard", { user: userData, db: db });
       })
       .catch((error) => {
         console.error("Error retrieving user data:", error);
@@ -132,7 +132,6 @@ app.get("/dashboard", (req, res) => {
     res.redirect("/login");
   }
 });
-
 
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -244,14 +243,16 @@ app.post("/create-task", checkAuthenticated, (req, res) => {
 
 app.post("/marker", checkAuthenticated, (req, res) => {
   const userId = req.user.uid;
-  const markerTitle = req.body['marker-name'];
-  const markerPhone = req.body['marker-phone'];
-  const markerAddress = req.body['marker-address'];
-  const markerDescription = req.body['marker-description'];
+  const markerTitle = req.body["marker-name"];
+  const markerPhone = req.body["marker-phone"];
+  const markerAddress = req.body["marker-address"];
+  const markerDescription = req.body["marker-description"];
+  const location = JSON.parse(req.body.location);
 
   // Create a new favor node in the database
   const favorsRef = db.ref("favors");
   const newFavorRef = favorsRef.push();
+
   newFavorRef
     .set({
       user_requested: userId,
@@ -259,6 +260,8 @@ app.post("/marker", checkAuthenticated, (req, res) => {
       phoneNumber: markerPhone,
       address: markerAddress,
       description: markerDescription,
+      latitude: location.lat,
+      longitude: location.lng,
     })
     .then(() => {
       const markerRef = db.ref(`favors/${newFavorRef.key}`);
@@ -271,6 +274,8 @@ app.post("/marker", checkAuthenticated, (req, res) => {
         phoneNumber: markerPhone,
         address: markerAddress,
         description: markerDescription,
+        latitude: location.lat,
+        longitude: location.lng,
       });
       res.redirect("/dashboard");
     })
@@ -282,4 +287,8 @@ app.post("/marker", checkAuthenticated, (req, res) => {
 
 app.get("/favor-popup1", (req, res) => {
   res.render("favor-popup1");
+});
+
+app.get("/rewards-page", (req, res) => {
+  res.render("rewards-page");
 });
