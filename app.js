@@ -210,10 +210,10 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
     activeFavorsSnapshot.forEach((favorSnapshot) => {
       const favorData = favorSnapshot.val();
       if (
-        favorData.user_assigned == userId ||
+        favorData.uid == userId ||
         favorData.user_requested == userId
       ) {
-        const assignedPromise = getUserName(favorData.user_assigned);
+        const assignedPromise = getUserName(favorData.uid);
         const requestedPromise = getUserName(favorData.user_requested);
         activeFavorsPromises.push(
           Promise.all([assignedPromise, requestedPromise]).then(
@@ -242,10 +242,10 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
       const favorData = favorSnapshot.val();
       if (
         favorData.date_completed !== 0 &&
-        (favorData.user_assigned == userId ||
+        (favorData.uid == userId ||
           favorData.user_requested == userId)
       ) {
-        const assignedPromise = getUserName(favorData.user_assigned);
+        const assignedPromise = getUserName(favorData.uid);
         const requestedPromise = getUserName(favorData.user_requested);
         completedFavorsPromises.push(
           Promise.all([assignedPromise, requestedPromise]).then(
@@ -253,7 +253,7 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
               id: favorSnapshot.key,
               ...favorSnapshot.val(),
               assigned: assignedName,
-              requested: requestedName,
+              requested: requestedName
             })
           )
         );
