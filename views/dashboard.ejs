@@ -180,7 +180,7 @@
         function createMarkersFromFavors() {
         const favorsRef = firebase.database().ref("favors");
 
-        favorsRef.on("child_added", (snapshot) => {
+        favorsRef.on("child_added", (snapshot, ) => {
           const favor = snapshot.val();
           const markerPosition = {
             lat: favor.location.lat, // modified here
