@@ -131,9 +131,12 @@ app.get("/dashboard", (req, res) => {
             const markersArray = [];
 
             for (const key in markersData) {
-              markersArray.push(markersData[key]);
+              markersArray.push({
+                id: key, // Include the favor ID
+                ...markersData[key],
+              });
             }
-
+            console.log("Markers array:", markersArray);
             res.render("dashboard", {
               user: userData,
               db: db,
@@ -209,11 +212,8 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
     const activeFavorsPromises = [];
     activeFavorsSnapshot.forEach((favorSnapshot) => {
       const favorData = favorSnapshot.val();
-      if (
-        favorData.user_assigned == userId ||
-        favorData.user_requested == userId
-      ) {
-        const assignedPromise = getUserName(favorData.user_assigned);
+      if (favorData.uid == userId || favorData.user_requested == userId) {
+        const assignedPromise = getUserName(favorData.uid);
         const requestedPromise = getUserName(favorData.user_requested);
         activeFavorsPromises.push(
           Promise.all([assignedPromise, requestedPromise]).then(
@@ -242,10 +242,9 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
       const favorData = favorSnapshot.val();
       if (
         favorData.date_completed !== 0 &&
-        (favorData.user_assigned == userId ||
-          favorData.user_requested == userId)
+        (favorData.uid == userId || favorData.user_requested == userId)
       ) {
-        const assignedPromise = getUserName(favorData.user_assigned);
+        const assignedPromise = getUserName(favorData.uid);
         const requestedPromise = getUserName(favorData.user_requested);
         completedFavorsPromises.push(
           Promise.all([assignedPromise, requestedPromise]).then(
@@ -391,8 +390,6 @@ app.post("/marker", checkAuthenticated, (req, res) => {
       phoneNumber: markerPhone,
       address: markerAddress,
       description: markerDescription,
-      latitude: location.lat,
-      longitude: location.lng,
     })
     .then(() => {
       const markerRef = db.ref(`favors/${newFavorRef.key}`);
@@ -405,8 +402,6 @@ app.post("/marker", checkAuthenticated, (req, res) => {
         phoneNumber: markerPhone,
         address: markerAddress,
         description: markerDescription,
-        latitude: location.lat,
-        longitude: location.lng,
       });
     })
     .catch((error) => {

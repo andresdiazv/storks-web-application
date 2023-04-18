@@ -38,18 +38,18 @@
       <table class="fl-table">
         <thead>
           <tr>
-            <th>Completed Date</th>
-            <th>Requested</th>
+            <th>Scheduled Date</th>
             <th>Assigned</th>
-            <th>Title</th>
+            <th>Requested</th>
+            <th>Favor Title</th>
             <th>Location</th>
-            <th>Details</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          <% complete.forEach((favor) => { %>
+          <% active.forEach((favor) => { %>
           <tr>
-            <td><%= favor.date_completed %></td>
+            <td><%= new Date(favor.date_requested).toLocaleDateString() %></td>
             <td><%= favor.requested %></td>
             <td><%= favor.assigned %></td>
             <td><%= favor.name %></td>
@@ -60,24 +60,25 @@
         </tbody>
       </table>
     </div>
+
     <h2>Completed Favors</h2>
 
     <div class="table-wrapper">
       <table class="fl-table">
         <thead>
           <tr>
-            <th>Scheduled Date</th>
+            <th>Completed Date</th>
             <th>Requested</th>
             <th>Assigned</th>
-            <th>Title</th>
+            <th>Favor Title</th>
             <th>Location</th>
-            <th>Details</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          <% active.forEach((favor) => { %>
+          <% complete.forEach((favor) => { %>
           <tr>
-            <td><%= favor.date_requested %></td>
+            <td><%= new Date(favor.date_completed).toLocaleDateString() %></td>
             <td><%= favor.requested %></td>
             <td><%= favor.assigned %></td>
             <td><%= favor.name %></td>

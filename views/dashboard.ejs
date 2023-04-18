@@ -23,8 +23,6 @@
       async
       defer
     ></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <title>Dashboard</title>
   </head>
@@ -92,7 +90,7 @@
             </div>
             <div class="modal-body">
               <form action="/marker" method="POST">
-                <label for="marker-title">Name:</label>
+                <label for="marker-title">Favor Title:</label>
                 <input type="text" id="marker-name" name="marker-name" />
                 <br />
                 <label for="marker-phone">Phone Number:</label>
@@ -135,7 +133,6 @@
     </main>
 
     <script>
-      // user's pfp
       const userProfilePictureUrl =
         "<%= user.profilePicture ? user.profilePicture + '?t=' + Date.now() : '/images/default-img.png' %>";
       let userMarker;
@@ -185,6 +182,7 @@
           const geocoder = new google.maps.Geocoder();
           geocoder.geocode({ address: address }, function (results, status) {
             if (status === "OK") {
+              console.log("Geocoding successful for:", address);
               const location = results[0].geometry.location;
               const marker = new google.maps.Marker({
                 position: location,
@@ -233,7 +231,8 @@
             );
           });
 
-        const markers = "<%= JSON.stringify(markers) %>";
+        const markers = JSON.parse("<%= JSON.stringify(markers) %>");
+        console.log("Markers data:", markers);
         markers.forEach((marker) => {
           addMarkerByAddress(
             marker.address,
