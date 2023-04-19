@@ -417,3 +417,13 @@ app.get("/favor-popup1", (req, res) => {
 app.get("/rewards-page", (req, res) => {
   res.render("rewards-page");
 });
+
+app.get("/about-us", (req, res) => {
+  res.render("about-us");
+});
+
+app.get("/about-us", (req, res) => {
+  res.render("about-us");
+});
+
+
