@@ -16,6 +16,16 @@ body {
     background-image: linear-gradient(315deg, #abe9cd 0%, #3eadcf 74%);
 }
 
+.tabs{
+    justify-content: space-between;
+    margin-right: 250px;
+}
+
+li{
+    justify-content: space-between;
+    margin-left: 150px;
+}
+
 img.logo {
     height: 20%;
     width: 20%;
@@ -145,6 +155,7 @@ header {
 
 .nav-links {
     display: flex;
+    
 }
 
 .nav-links li {
