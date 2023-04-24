@@ -12,7 +12,18 @@
 body {
     font-family: Helvetica;
     -webkit-font-smoothing: antialiased;
-    background: #1477d2;
+    background-color: #abe9cd;
+    background-image: linear-gradient(315deg, #abe9cd 0%, #3eadcf 74%);
+}
+
+.tabs{
+    justify-content: space-between;
+    margin-right: 250px;
+}
+
+li{
+    justify-content: space-between;
+    margin-left: 150px;
 }
 
 img.logo {
@@ -123,7 +134,7 @@ h2 {
 
 header {
     width: 100%;
-    background-color: #003B6D;
+    background-color: black;
 }
 
 .navbar {
@@ -144,6 +155,7 @@ header {
 
 .nav-links {
     display: flex;
+    
 }
 
 .nav-links li {
@@ -198,7 +210,7 @@ header {
 
 .logout-btn {
     display: inline-block;
-    background-color: #003B6D;
+    background-color: black;
     color: #fff;
     border: 2px solid #fff;
     padding: 0.5rem 1rem;
@@ -214,3 +226,4 @@ header {
     background-color: #fff;
     color: #003B6D;
 }
+

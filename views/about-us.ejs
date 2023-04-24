@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/about-us.css">
+    <title>Document</title>
+    <style>
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="U1">
+        <div class="Andres">
+            <img id="Default-image" img src="/images/AndresLink.jpeg" class="U01">
+            <h5 class="bio">Andres Diazvictores. <br> "Hard work beats talent when talent does not work hard"</h5>
+            <a href="https://www.linkedin.com/in/andres-diazvictores" target="_blank">
+                <img src="/images/linkedin-logo-3.png" class="link">
+            </a>
+        </div>
+
+        <div class="Percie">
+            <img id="Default-image" img src="/images/PercieLink.jpeg" class="U01">
+            <h5 class="bio">Persephone Dechario. <br> "It always seems impossible until is done."</h5>
+            <a href="https://www.linkedin.com/in/persephone-dechario-476aa493" target="_blank">
+                <img src="/images/linkedin-logo-3.png" class="link">
+            </a>
+        </div>
+
+        <div class="Ariel">
+            <img id="Default-image" img src="/images/ArielLink.jpeg" class="U01">
+            <h5 class="bio">Ariel Rubinstein. <br> "If everything seems under control you are just not going fast
+                enough"</h5>
+            <a href="https://www.linkedin.com/in/ariel-rubinstein-a92979169" target="_blank">
+                <img src="/images/linkedin-logo-3.png" class="link">
+            </a>
+        </div>
+
+        <div class="Sevval">
+            <img id="Default-image" img src="/images/DenizLink.jpg" class="U01">
+            <h5 class="bio">Sevval Erkurt. <br> "Istanbul not Constantinople."</h5>
+            <a href="https://www.linkedin.com/in/deniz-erkurt-625379262" target="_blank">
+                <img src="/images/linkedin-logo-3.png" class="link">
+            </a>
+        </div>
+
+        <div class="Valeria">
+            <img id="Default-image" img src="/images/ValeriaLink.jpeg" class="U01">
+            <h5 class="bio">Valeria Wardini. <br> "If caulifower can become a pizza dough you can become whatever you
+                want"</h5>
+            <a href="https://www.linkedin.com/in/valeria-wardini-96ab6423b" target="_blank">
+                <img src="/images/linkedin-logo-3.png" class="link">
+            </a>
+        </div>
+
+    </div>
+
+    <div class="container">
+        <h1 class="tab-header" data-index="0">Who we are?</h1>
+        <div class="tab-content hide">We are a group of passionate students who have joined forces to create a website
+            that we believe will be incredibly valuable to all students at Florida International University. Our goal is
+            to provide a platform that offers a wide range of benefits and resources to help students excel in their
+            academic pursuits and enhance their overall university experience. We are excited to share our website with
+            the FIU community and look forward to making a positive impact on campus!</div>
+        <h1 class="tab-header" data-index="1">How to create a task?</h1>
+        <div class="tab-content hide">To create a task, start by providing all the necessary information and click on
+            "Post" once you have filled out everything required. We encourage you to provide as much detail as possible
+            in the description box to help taskers understand exactly what you need. Once you've posted your task, a
+            tasker will receive your location and get in touch with you to discuss the specifics. We are confident that
+            our platform will provide you with an exceptional experience, so sit back and get ready for an
+            amazing outcome!</div>
+        <h1 class="tab-header" data-index="2">What do we give back to our tasker?</h1>
+        <div class="tab-content hide">At FIU, we value the hard work and dedication of our taskers. As a token of our
+            appreciation, Florida International University will deposit points into your account once you have
+            successfully completed a task. These points can be redeemed at any of the on-campus restaurants, providing
+            you with a well-deserved treat for your efforts.</div>
+        <h1 class="tab-header" data-index="3">What make us unique?</h1>
+        <div class="tab-content hide">What sets us apart is our commitment to providing an exclusive platform for the
+            Florida International University community. Our website is the first of its kind, designed specifically to
+            benefit FIU students by fostering a unique and collaborative environment where individuals can share their
+            knowledge and experiences with one another. By facilitating such interactions, we strive to enhance the
+            overall student experience and provide a space for our community to come together and thrive.</div>
+        <h1 class="tab-header" data-index="4">What is the Favor Counter?</h1>
+        <div class="tab-content hide">The Favor Counter is a tool on your profile dashboard that keeps track of all the
+            favors you have completed or requested. It shows you the number of points you have earned from completing
+            favors, and serves as a convenient backup record of your activity on the website.</div>
+        <h1 class="tab-header" data-index="5">How can I redeem my points?</h1>
+        <div class="tab-content hide">To redeem your points, simply log in to the website and navigate to your profile
+            dashboard. Click on the "Rewards" section and you'll be able to view your current points balance. From
+            there, you can browse the list of restaurants, and choose what you'd like to redeem with your available
+            balance. It's that easy!</div>
+    </div>
+    <script>const tabHeader = document.querySelectorAll('.tab-header')
+        const tabContent = document.querySelectorAll('.tab-content')
+
+        tabHeader.forEach(element => {
+            element.addEventListener('click', tabClick)
+        })
+
+        function tabClick(tab) {
+            tabContent.forEach((element, index) => {
+                if (index === parseInt(tab.target.dataset.index)) {
+                    element.classList.toggle('hide')
+                } else {
+                    element.classList.add('hide')
+                }
+            })
+        }</script>
+
+</body>
+
+</html>
