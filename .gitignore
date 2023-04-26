@@ -1,3 +1,4 @@
 # .gitignore
 serviceAccountKey.json
 googleApiKey.js
+node_modules
