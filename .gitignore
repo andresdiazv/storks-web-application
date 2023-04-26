@@ -1,0 +1,3 @@
+# .gitignore
+serviceAccountKey.json
+googleApiKey.js

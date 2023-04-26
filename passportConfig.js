@@ -8,7 +8,7 @@ function initialize(passport) {
       .auth()
       .getUserByEmail(email)
       .then((userRecord) => {
-        // Get the user data from the Realtime Database
+       
         admin
           .database()
           .ref(`users/${userRecord.uid}`)
@@ -16,7 +16,6 @@ function initialize(passport) {
           .then((snapshot) => {
             const userData = snapshot.val();
 
-            // Compare the entered password with the stored hashed password
             bcrypt.compare(password, userData.password, (err, isMatch) => {
               if (err) {
                 return done(err);

@@ -1,6 +1,7 @@
 const express = require("express");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
+const googleApiConfig = require("./googleApiKey");
 const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
@@ -123,7 +124,6 @@ app.get("/dashboard", (req, res) => {
       .then((snapshot) => {
         const userData = snapshot.val();
 
-        // Fetch markers from the database
         db.ref("favors")
           .once("value")
           .then((markerSnapshot) => {
@@ -132,7 +132,7 @@ app.get("/dashboard", (req, res) => {
 
             for (const key in markersData) {
               markersArray.push({
-                id: key, // Include the favor ID
+                id: key,
                 ...markersData[key],
               });
             }
@@ -141,6 +141,7 @@ app.get("/dashboard", (req, res) => {
               user: userData,
               db: db,
               markers: markersArray,
+              googleApiKey: googleApiConfig.googleApiKey,
             });
           })
           .catch((error) => {
@@ -197,12 +198,10 @@ function getUserName(userId) {
     });
 }
 
-// start favors
 app.get("/favors", checkAuthenticated, async (req, res) => {
   if (req.isAuthenticated()) {
     const userId = req.user.uid;
 
-    // Get active favors
     const activeFavorsSnapshot = await db
       .ref("favors")
       .orderByChild("date_completed")
@@ -230,7 +229,6 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
 
     const activeFavors = await Promise.all(activeFavorsPromises);
 
-    // Get completed favors
     const completedFavorsSnapshot = await db
       .ref("favors")
       .orderByChild("date_completed")
@@ -261,7 +259,6 @@ app.get("/favors", checkAuthenticated, async (req, res) => {
 
     const completedFavors = await Promise.all(completedFavorsPromises);
 
-    // Get user data
     const userSnapshot = await db.ref(`users/${userId}`).once("value");
     const userData = userSnapshot.val();
 
@@ -344,8 +341,6 @@ app.post("/create-task", checkAuthenticated, (req, res) => {
   const phoneNumber = req.body.markerPhone;
   const address = req.body.markerAddress;
   const description = req.body.markerDescription;
-
-  // Create a new favor node in the database
   const favorsRef = db.ref("favors");
   const newFavorRef = favorsRef.push();
   newFavorRef
@@ -379,7 +374,6 @@ app.post("/marker", checkAuthenticated, (req, res) => {
   const markerDescription = req.body["marker-description"];
   const location = JSON.parse(req.body.location);
 
-  // Create a new favor node in the database
   const favorsRef = db.ref("favors");
   const newFavorRef = favorsRef.push();
 
@@ -425,5 +419,3 @@ app.get("/about-us", (req, res) => {
 app.get("/about-us", (req, res) => {
   res.render("about-us");
 });
-
-
